@@ -61,7 +61,7 @@ function benc_resp_raw($x) {
 	header("Content-Type: text/plain; charset=utf-8");
 	header("Pragma: no-cache");
 
-	if ($_SERVER["HTTP_ACCEPT_ENCODING"] == "gzip") {
+	if ($_SERVER["HTTP_ACCEPT_ENCODING"] == "gzip" && function_exists('gzencode')) {
 		header("Content-Encoding: gzip");
 		echo gzencode($x, 9, FORCE_GZIP);
 	} 
@@ -167,7 +167,7 @@ function ipv4_to_compact($ip, $port)
 	return $compact;
 }
 
-function check_client($peer_id, $agent, $agent_familyid)
+function check_client($peer_id, $agent, &$agent_familyid)
 {
 	global $BASEURL, $Cache;
 
@@ -296,7 +296,7 @@ function check_client($peer_id, $agent, $agent_familyid)
 
 	if($allowed_flag_peer_id && $allowed_flag_agent)
 	{
-		if($exception = 'yes')
+		if($exception == 'yes')
 		{
 			if (!$clients_exp = $Cache->get_value('allowed_client_exception_family_'.$family_id.'_list')){
 				$clients_exp = array();
@@ -338,4 +338,31 @@ function check_client($peer_id, $agent, $agent_familyid)
 		return "Banned Client, Please goto $BASEURL/faq.php#id29 for a list of acceptable clients";
 	}
 }
-?>
+
+class AnnounceUtil
+{
+	public static function getUploadRatio($sp_state){
+		switch($sp_state){
+			case 3: 
+			case 4: 
+			case 6: return 2;
+			case 1: 
+			case 2: 
+			case 5: 
+			case 7: 
+			default: return 1;
+		}
+	}
+	public static function getDownloadRatio($sp_state){
+		switch($sp_state){
+			case 1: 
+			case 3: return 1;
+			case 2: 
+			case 4: return 0;
+			case 5: 
+			case 6: return 0.5;
+			case 7: return 0.3;
+			default: return 1;
+		}
+	}
+}

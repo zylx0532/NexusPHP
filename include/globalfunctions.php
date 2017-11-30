@@ -73,15 +73,12 @@ function sql_query($query)
 }
 
 function sqlesc($value) {
-	// Stripslashes
-	if (get_magic_quotes_gpc()) {
-		$value = stripslashes($value);
-	}
-	// Quote if not a number or a numeric string
-	if (!is_numeric($value)) {
 		$value = "'" . mysql_real_escape_string($value) . "'";
-	}
 	return $value;
+}
+
+function sqlnow(){
+	return sqlesc(date('Y-m-d H:i:s'));
 }
 
 function hash_pad($hash) {
@@ -92,4 +89,45 @@ function hash_where($name, $hash) {
 	$shhash = preg_replace('/ *$/s', "", $hash);
 	return "($name = " . sqlesc($hash) . " OR $name = " . sqlesc($shhash) . ")";
 }
-?>
+
+function is_require_hitrun($added)
+{	
+	global $release_days_hnr;
+	if(!is_int($added)) $added = strtotime($added);
+	return $added > TIMENOW - $release_days_hnr * 86400;
+}
+
+function get_category_row($catid = NULL)
+{
+    global $Cache;
+    static $rows;
+    if (!$rows && !$rows = $Cache->get_value('category_content')){
+        $res = sql_query("SELECT categories.*, searchbox.name AS catmodename FROM categories LEFT JOIN searchbox ON categories.mode=searchbox.id");
+        while($row = mysql_fetch_array($res)) {
+            $rows[$row['id']] = $row;
+        }
+        $Cache->cache_value('category_content', $rows, 126400);
+    }
+    if ($catid) {
+        return $rows[$catid];
+    } else {
+        return $rows;
+    }
+}
+
+function can_access_special($userClass = null)
+{
+    global $access_secondary_zone_class;
+    return ($userClass ?: get_user_class()) >= $access_secondary_zone_class;
+}
+
+function can_access_category($categoryID, $userClass = null)
+{
+    global $specialcatmode;
+    if(!$specialcatmode) return true;
+    if($category = get_category_row($categoryID)){
+        return $category['mode'] == $specialcatmode ? can_access_special($userClass) : true;
+    }else{
+        return false;
+    }
+}

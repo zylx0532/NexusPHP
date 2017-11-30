@@ -122,7 +122,11 @@ $lang_mybonus = array
 	'bonus_amount_not_allowed_two' => "魔力值数量不允许。你每次只能赠送1000.0至50000.0个魔力值。",
 	'bonus_ratio_not_allowed' => "分享率不符合要求！只有分享率低于0.8的用户需要慈善帮助。",
 	'std_no_users_need_charity' => "暂时没有需要慈善帮助的用户。",
-	'text_success_charity' => "谢谢！感谢你的慷慨捐赠。"
+	'text_success_charity' => "谢谢！感谢你的慷慨捐赠。",
+	'text_exchange_hr' => '消除一次H&R记录',
+	'text_exchange_hr_ok' => '已使用魔力值消除一次H&R记录',
+	'text_exchange_hr_btn' => '消除',
+	'text_exchange_hr_btn_disabled' => '无需消除',
 );
 
 ?>

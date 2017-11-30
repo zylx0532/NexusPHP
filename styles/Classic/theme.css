@@ -24,15 +24,20 @@ table.head
 {
 	background: transparent;
 	height: 100px;
-	width: 920px;
+	width: 90%;
+	min-width: 920px;
 }
 table.main
 {
-	background-color: #f5f4ea
+	background-color: #f5f4ea;
+	width: 90%;
+	min-width: 920px;
 }
 table.mainouter
 {
-	background-color: #f5f4ea
+	background-color: #f5f4ea;
+	width: 90%;
+	min-width: 920px;
 }
 table.message
 {
@@ -651,3 +656,27 @@ A.Peasant_Name:visited{color: #708090}
 .recommended{color:#820084}
 .new{color:#ff0000}
 .striking{color:#ff0000}
+
+.progress-done, .progress-left{
+	display: inline-block;
+	margin: 1px 0px;
+	padding: 0;
+	height: 3px;
+	border: 1px solid black;
+}
+.progress-done{
+	border-radius: 3px 0 0 3px;
+	background-color: #0055a4;
+	border-right: none;
+}
+.progress-left{
+	border-radius: 0 3px 3px 0;
+	background-color: #eeeeee;
+	border-left: none;
+}
+.progress-full{
+	border-radius: 3px !important;
+	border: 1px solid black !important;
+}
+.sticky_top{background-color: #bad6f4}
+.sticky_normal{background-color: #d4e6f8}

@@ -23,7 +23,8 @@ table.head
 {
 	background: transparent;
 	height: 100px;
-	width: 920px;
+	width: 90%;
+	min-width: 920px;
 }
 table.main
 {
@@ -31,7 +32,9 @@ table.main
 	border-top: medium none;
 	border-left: medium none;
 	border-bottom: medium none;
-	background-color: transparent
+	background-color: transparent;
+	width: 90%;
+	min-width: 920px;
 }
 table.mainouter
 {
@@ -39,7 +42,9 @@ table.mainouter
 	border-top: gray;
 	border-left: gray;
 	border-bottom: gray;
-	background-color: white
+	background-color: white;
+	width: 90%;
+	min-width: 920px;
 }
 table.message
 {
@@ -681,3 +686,26 @@ A.Peasant_Name:visited{color: #708090}
 .recommended{color:#820084}
 .new{color:#ff0000}
 .striking{color:#ff0000}
+.progress-done, .progress-left{
+	display: inline-block;
+	margin: 1px 0px;
+	padding: 0;
+	height: 3px;
+	border: 1px solid black;
+}
+.progress-done{
+	border-radius: 3px 0 0 3px;
+	background-color: #ffa531;
+	border-right: none;
+}
+.progress-left{
+	border-radius: 0 3px 3px 0;
+	background-color: #eeeeee;
+	border-left: none;
+}
+.progress-full{
+	border-radius: 3px !important;
+	border: 1px solid black !important;
+}
+.sticky_top{background-color: #F5DEB3}
+.sticky_normal{background-color: #FFC0CB}

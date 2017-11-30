@@ -406,6 +406,13 @@ width:16px;
 height:23px;
 background:url(icons.gif) -98px -202px;
 }
+img.hitandrun
+{
+width:35px;
+height:12px;
+background:url(icons.gif?2) no-repeat -100px -171px;
+margin-left: 0.5em;
+}
 img.bar_left
 {
 width:2px;

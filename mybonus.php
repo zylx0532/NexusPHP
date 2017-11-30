@@ -7,7 +7,7 @@ loggedinorreturn();
 parked();
 
 function bonusarray($option){
-	global $onegbupload_bonus,$fivegbupload_bonus,$tengbupload_bonus,$oneinvite_bonus,$customtitle_bonus,$vipstatus_bonus, $basictax_bonus, $taxpercentage_bonus, $bonusnoadpoint_advertisement, $bonusnoadtime_advertisement;
+	global $onegbupload_bonus,$fivegbupload_bonus,$tengbupload_bonus,$oneinvite_bonus,$customtitle_bonus,$vipstatus_bonus, $basictax_bonus, $taxpercentage_bonus, $bonusnoadpoint_advertisement, $bonusnoadtime_advertisement, $price_hnr;
 	global $lang_mybonus;
 	$bonus = array();
 	switch ($option)
@@ -88,6 +88,13 @@ function bonusarray($option){
 			$bonus['description'] = $lang_mybonus['text_charity_giving_note'];
 			break;
 			}
+		case 10:
+			$bonus['points'] = $price_hnr;
+			$bonus['art'] = 'hr';
+			$bonus['menge'] = 0;
+			$bonus['name'] = $lang_mybonus['text_exchange_hr'];
+			$bonus['description'] = '';
+			break;
 		default: break;
 	}
 	return $bonus;
@@ -116,6 +123,7 @@ if (isset($do)) {
 	$msg =  $lang_mybonus['text_success_no_ad'];
 	elseif ($do == "charity")
 	$msg =  $lang_mybonus['text_success_charity'];
+	elseif ($do == 'hr') $msg = $lang_mybonus['text_exchange_hr_ok'];
 	else
 	$msg = '';
 }
@@ -123,7 +131,7 @@ if (isset($do)) {
 
 	$bonus = number_format($CURUSER['seedbonus'], 1);
 if (!$action) {
-	print("<table align=\"center\" width=\"940\" border=\"1\" cellspacing=\"0\" cellpadding=\"3\">\n");
+	print("<table align=\"center\" width=\"90%\" border=\"1\" cellspacing=\"0\" cellpadding=\"3\">\n");
 	print("<tr><td class=\"colhead\" colspan=\"4\" align=\"center\"><font class=\"big\">".$SITENAME.$lang_mybonus['text_karma_system']."</font></td></tr>\n");
 	if ($msg)
 	print("<tr><td align=\"center\" colspan=\"4\"><font class=\"striking\">". $msg ."</font></td></tr>");
@@ -137,7 +145,7 @@ print("<tr><td class=\"colhead\" align=\"center\">".$lang_mybonus['col_option'].
 "<td class=\"colhead\" align=\"center\">".$lang_mybonus['col_points']."</td>".
 "<td class=\"colhead\" align=\"center\">".$lang_mybonus['col_trade']."</td>".
 "</tr>");
-for ($i=1; $i <=9; $i++)
+for ($i=1; $i <=10; $i++)
 {
 	$bonusarray = bonusarray($i);
 	if (($i == 7 && $bonusgift_bonus == 'no') || ($i == 8 && ($enablead_advertisement == 'no' || $bonusnoad_advertisement == 'no')))
@@ -178,6 +186,10 @@ for ($i=1; $i <=9; $i++)
 		}
 		elseif ($i==9){
 			print("<td class=\"rowfollow\" align=\"center\"><input type=\"submit\" name=\"submit\" value=\"".$lang_mybonus['submit_charity_giving']."\" /></td>");
+		}
+		elseif ($i==10){
+			$hasHR = $CURUSER['hr'] > 0;
+			printf('<td class="rowfollow" align="center"><input type="submit" name="submit" value="%s"%s></td>', $hasHR ? $lang_mybonus['text_exchange_hr_btn'] : $lang_mybonus['text_exchange_hr_btn_disabled'], EchoDisabled(!$hasHR));
 		}
 		elseif($i==4)
 		{
@@ -220,7 +232,7 @@ for ($i=1; $i <=9; $i++)
 print("</table><br />");
 ?>
 
-<table width="940" cellpadding="3">
+<table width="90%" cellpadding="3">
 <tr><td class="colhead" align="center"><font class="big"><?php echo $lang_mybonus['text_what_is_karma'] ?></font></td></tr>
 <tr><td class="text" align="left">
 <?php
@@ -469,9 +481,12 @@ if ($action == "exchange") {
 				redirect("" . get_protocol_prefix() . "$BASEURL/mybonus.php?do=transfer");
 			}
 			else{
-				print("<table width=\"940\"><tr><td class=\"colhead\" align=\"left\" colspan=\"2\"><h1>".$lang_mybonus['text_oups']."</h1></td></tr>");
+				print("<table width=\"90%\"><tr><td class=\"colhead\" align=\"left\" colspan=\"2\"><h1>".$lang_mybonus['text_oups']."</h1></td></tr>");
 				print("<tr><td align=\"left\"></td><td align=\"left\">".$lang_mybonus['text_not_enough_karma']."<br /><br /></td></tr></table>");
 			}
+		}elseif($art == 'hr' && $CURUSER['hr'] > 0){
+			sql_query(sprintf('UPDATE users SET hr = hr - 1 WHERE id = %u AND hr > 0', $CURUSER['id'])) or sqlerr(__FILE__, __LINE__);
+			redirect("mybonus.php?do=hr");
 		}
 	}
 }
