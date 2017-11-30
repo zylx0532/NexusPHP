@@ -10,3 +10,8 @@ Visit http://www.nexusphp.com for more information about this project.
 Edit the /config/ucenter.php to add ucenter support.
 for more detail: please contact me:
     kebot.me@gmail.com
+
+20171130:
+mysql-->mysqli; update getip();update imdb.class.php;
+ignore config/allconfig.php, please restore it from config/allconfig.php.bak
+
