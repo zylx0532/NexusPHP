@@ -107,7 +107,7 @@ function sql_fetch_row($result)
 function sql_error()
 {
 	global $link;
-	return sql_error()($link);
+	return mysqli_error($link);
 }
 
 function sqlesc($value) {
