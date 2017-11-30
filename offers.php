@@ -94,7 +94,7 @@ if ($_GET["new_offer"]){
 	$descr .= $descrmain;
 
 	$res = sql_query("SELECT name FROM offers WHERE name =".sqlesc($_POST[name])) or sqlerr(__FILE__,__LINE__);
-	$arr = mysql_fetch_assoc($res);
+	$arr = mysqli_fetch_assoc($res);
 	if (!$arr['name']){
 		//===add karma //=== uncomment if you use the mod
 		//sql_query("UPDATE users SET seedbonus = seedbonus+10.0 WHERE id = $CURUSER[id]") or sqlerr(__FILE__, __LINE__);
@@ -104,9 +104,9 @@ if ($_GET["new_offer"]){
 		implode(",", array_map("sqlesc", array($CURUSER["id"], $name, $descr, 0 + $_POST["type"]))) .
 		", '" . date("Y-m-d H:i:s") . "')");
 		if (!$ret) {
-			if (mysql_errno() == 1062)
+			if (mysqli_errno($link) == 1062)
 			bark("!!!");
-			bark("mysql puked: ".mysql_error());
+			bark("mysql puked: ".sql_error());
 		}
 		$id = mysql_insert_id();
 
@@ -137,7 +137,7 @@ if ($_GET["off_details"]){
 		//stderr("Error", "I smell a rat!");
 	
 	$res = sql_query("SELECT * FROM offers WHERE id = $id") or sqlerr(__FILE__,__LINE__);
-	$num = mysql_fetch_array($res);
+	$num = mysqli_fetch_array($res);
 
 	$s = $num["name"];
 
@@ -164,10 +164,10 @@ if ($_GET["off_details"]){
 	"<input type=\"hidden\" value=\"".$id."\" name=\"finish\" /><input class=\"btn\" type=\"submit\" value=\"".$lang_offers['submit_let_votes_decide']."\" /></form></td></tr></table>", 1);
 
 	$zres = sql_query("SELECT COUNT(*) from offervotes where vote='yeah' and offerid=$id");
-	$arr = mysql_fetch_row($zres);
+	$arr = sql_fetch_row($zres);
 	$za = $arr[0];
 	$pres = sql_query("SELECT COUNT(*) from offervotes where vote='against' and offerid=$id");
-	$arr2 = mysql_fetch_row($pres);
+	$arr2 = sql_fetch_row($pres);
 	$protiv = $arr2[0];
 	//=== in the following section, there is a line to report comment... either remove the link or change it to work with your report script :)
 
@@ -200,7 +200,7 @@ if ($_GET["off_details"]){
 	// -----------------COMMENT SECTION ---------------------//
 	$commentbar = "<p align=\"center\"><a class=\"index\" href=\"comment.php?action=add&amp;pid=".$id."&amp;type=offer\">".$lang_offers['text_add_comment']."</a></p>\n";
 	$subres = sql_query("SELECT COUNT(*) FROM comments WHERE offer = $id");
-	$subrow = mysql_fetch_array($subres);
+	$subrow = mysqli_fetch_array($subres);
 	$count = $subrow[0];
 	if (!$count) {
 		print("<h1 id=\"startcomments\" align=\"center\">".$lang_offers['text_no_comments']."</h1>\n");
@@ -211,7 +211,7 @@ if ($_GET["off_details"]){
 
 		$subres = sql_query("SELECT id, text, user, added, editedby, editdate FROM comments  WHERE offer = " . sqlesc($id) . " ORDER BY id $limit") or sqlerr(__FILE__, __LINE__);
 		$allrows = array();
-		while ($subrow = mysql_fetch_array($subres))
+		while ($subrow = mysqli_fetch_array($subres))
 		$allrows[] = $subrow;
 
 		//end_frame();
@@ -249,7 +249,7 @@ if ($_GET["allow_offer"]) {
 	stderr($lang_offers['std_error'], $lang_offers['std_smell_rat']);
 
 	$res = sql_query("SELECT users.username, offers.userid, offers.name FROM offers inner join users on offers.userid = users.id where offers.id = $offid") or sqlerr(__FILE__,__LINE__);
-	$arr = mysql_fetch_assoc($res);
+	$arr = mysqli_fetch_assoc($res);
 	if ($offeruptimeout_main){
 		$timeouthour = floor($offeruptimeout_main/3600);
 		$timeoutnote = $lang_offers_target[get_user_lang($arr["userid"])]['msg_you_must_upload_in'].$timeouthour.$lang_offers_target[get_user_lang($arr["userid"])]['msg_hours_otherwise'];
@@ -282,13 +282,13 @@ if ($_GET["finish_offer"]) {
 		stderr($lang_offers['std_error'], $lang_offers['std_smell_rat']);
 
 	$res = sql_query("SELECT users.username, offers.userid, offers.name FROM offers inner join users on offers.userid = users.id where offers.id = $offid") or sqlerr(__FILE__,__LINE__);
-	$arr = mysql_fetch_assoc($res);
+	$arr = mysqli_fetch_assoc($res);
 
 	$voteresyes = sql_query("SELECT COUNT(*) from offervotes where vote='yeah' and offerid=$offid");
-	$arryes = mysql_fetch_row($voteresyes);
+	$arryes = sql_fetch_row($voteresyes);
 	$yes = $arryes[0];
 	$voteresno = sql_query("SELECT COUNT(*) from offervotes where vote='against' and offerid=$offid");
-	$arrno = mysql_fetch_row($voteresno);
+	$arrno = sql_fetch_row($voteresno);
 	$no = $arrno[0];
 
 	if($yes == '0' && $no == '0')
@@ -330,7 +330,7 @@ if ($_GET["edit_offer"]) {
 	$id = 0 + $_GET["id"];
 
 	$res = sql_query("SELECT * FROM offers WHERE id = $id") or sqlerr(__FILE__, __LINE__);
-	$num = mysql_fetch_array($res);
+	$num = mysqli_fetch_array($res);
 
 	$timezone = $num["added"];
 
@@ -376,7 +376,7 @@ if ($_GET["take_off_edit"]){
 	$id = 0 + $_GET["id"];
 
 	$res = sql_query("SELECT userid FROM offers WHERE id = $id") or sqlerr(__FILE__, __LINE__);
-	$num = mysql_fetch_array($res);
+	$num = mysqli_fetch_array($res);
 
 	if ($CURUSER[id] != $num[userid] && get_user_class() < $offermanage_class)
 	stderr($lang_offers['std_error'], $lang_offers['std_access_denied']);
@@ -419,7 +419,7 @@ if ($_GET["offer_vote"]){
 	$offerid = 0 + htmlspecialchars($_GET[id]);
 
 	$res2 = sql_query("SELECT COUNT(*) FROM offervotes WHERE offerid = ".sqlesc($offerid)) or sqlerr(__FILE__, __LINE__);
-	$row = mysql_fetch_array($res2);
+	$row = mysqli_fetch_array($res2);
 	$count = $row[0];
 
 	$offername = get_single_value("offers","name","WHERE id=".sqlesc($offerid));
@@ -431,14 +431,14 @@ if ($_GET["offer_vote"]){
 	list($pagertop, $pagerbottom, $limit) = pager($perpage, $count, $_SERVER["PHP_SELF"] ."?id=".$offerid."&offer_vote=1&");
 	$res = sql_query("SELECT * FROM offervotes WHERE offerid=".sqlesc($offerid)." ".$limit) or sqlerr(__FILE__, __LINE__);
 
-	if (mysql_num_rows($res) == 0)
+	if (sql_num_rows($res) == 0)
 	print("<p align=center><b>".$lang_offers['std_no_votes_yet']."</b></p>\n");
 	else
 	{
 		echo $pagertop;
 		print("<table border=1 cellspacing=0 cellpadding=5><tr><td class=colhead>".$lang_offers['col_user']."</td><td class=colhead align=left>".$lang_offers['col_vote']."</td>\n");
 
-		while ($arr = mysql_fetch_assoc($res))
+		while ($arr = mysqli_fetch_assoc($res))
 		{
 			if ($arr[vote] == 'yeah')
 				$vote = "<b><font color=green>".$lang_offers['text_for']."</font></b>";
@@ -467,7 +467,7 @@ if ($_GET["vote"]){
 	{
 		$userid = 0+$CURUSER["id"];
 		$res = sql_query("SELECT * FROM offervotes WHERE offerid=".sqlesc($offerid)." AND userid=".sqlesc($userid)) or sqlerr(__FILE__,__LINE__);
-		$arr = mysql_fetch_assoc($res);
+		$arr = mysqli_fetch_assoc($res);
 		$voted = $arr;
 		$offer_userid = get_single_value("offers", "userid", "WHERE id=".sqlesc($offerid));
 		if ($offer_userid == $CURUSER['id'])
@@ -483,10 +483,10 @@ if ($_GET["vote"]){
 			sql_query("UPDATE offers SET $vote = $vote + 1 WHERE id=".sqlesc($offerid)) or sqlerr(__FILE__,__LINE__);
 
 			$res = sql_query("SELECT users.username, offers.userid, offers.name FROM offers LEFT JOIN users ON offers.userid = users.id WHERE offers.id = ".sqlesc($offerid)) or sqlerr(__FILE__,__LINE__);
-			$arr = mysql_fetch_assoc($res);
+			$arr = mysqli_fetch_assoc($res);
 
 			$rs = sql_query("SELECT yeah, against, allowed FROM offers WHERE id=".sqlesc($offerid)) or sqlerr(__FILE__,__LINE__);
-			$ya_arr = mysql_fetch_assoc($rs);
+			$ya_arr = mysqli_fetch_assoc($rs);
 			$yeah = $ya_arr["yeah"];
 			$against = $ya_arr["against"];
 			$finishtime = date("Y-m-d H:i:s");
@@ -543,7 +543,7 @@ if ($_GET["del_offer"]){
 	stderr($lang_offers['std_error'], $lang_offers['std_smell_rat']);
 
 	$res = sql_query("SELECT * FROM offers WHERE id = $offer") or sqlerr(__FILE__, __LINE__);
-	$num = mysql_fetch_array($res);
+	$num = mysqli_fetch_array($res);
 
 	$name = $num["name"];
 
@@ -679,7 +679,7 @@ else
 $categ = "WHERE offers.category = " . $categ;
 
 $res = sql_query("SELECT count(offers.id) FROM offers inner join categories on offers.category = categories.id inner join users on offers.userid = users.id  $categ $search") or sqlerr(__FILE__, __LINE__);
-$row = mysql_fetch_array($res);
+$row = mysqli_fetch_array($res);
 $count = $row[0];
 
 $perpage = 25;
@@ -691,7 +691,7 @@ if($sort == "")
 $sort =  "ORDER BY added desc ";
 
 $res = sql_query("SELECT offers.id, offers.userid, offers.name, offers.added, offers.allowedtime, offers.comments, offers.yeah, offers.against, offers.category as cat_id, offers.allowed, categories.image, categories.name as cat FROM offers inner join categories on offers.category = categories.id $categ $search $sort $limit") or sqlerr(__FILE__,__LINE__);
-$num = mysql_num_rows($res);
+$num = sql_num_rows($res);
 
 stdhead($lang_offers['head_offers']);
 begin_main_frame();
@@ -738,7 +738,7 @@ print("<td class=\"colhead\">".$lang_offers['col_offered_by']."</td>".
 (get_user_class() >= $offermanage_class ? "<td class=\"colhead\">".$lang_offers['col_act']."</td>" : "")."</tr>\n");
 	for ($i = 0; $i < $num; ++$i)
 	{
-	$arr = mysql_fetch_assoc($res);
+	$arr = mysqli_fetch_assoc($res);
 
 
 	$addedby = get_username($arr['userid']);
@@ -749,7 +749,7 @@ print("<td class=\"colhead\">".$lang_offers['col_offered_by']."</td>".
 	{
 		if (!$lastcom = $Cache->get_value('offer_'.$arr[id].'_last_comment_content')){
 			$res2 = sql_query("SELECT user, added, text FROM comments WHERE offer = $arr[id] ORDER BY added DESC LIMIT 1");
-			$lastcom = mysql_fetch_array($res2);
+			$lastcom = mysqli_fetch_array($res2);
 			$Cache->cache_value('offer_'.$arr[id].'_last_comment_content', $lastcom, 1855);
 		}
 		$timestamp = strtotime($lastcom["added"]);

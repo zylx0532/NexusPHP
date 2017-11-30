@@ -19,8 +19,8 @@ if (!$id)
 	die();
 
 
-$res = sql_query("SELECT category, owner, filename, save_as, anonymous, picktype, picktime, added FROM torrents WHERE id = ".mysql_real_escape_string($id));
-$row = mysql_fetch_array($res);
+$res = sql_query("SELECT category, owner, filename, save_as, anonymous, picktype, picktime, added FROM torrents WHERE id = ".sql_real_escape_string($id));
+$row = mysqli_fetch_array($res);
 $torrentAddedTimeString = $row['added'];
 if (!$row)
 	die();

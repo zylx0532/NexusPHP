@@ -15,7 +15,7 @@ if ($action == 'delete')
 	$id = 0+$_GET["id"];
 	int_check($id,true);
 	$res = sql_query("SELECT userid FROM fun WHERE id=$id") or sqlerr(__FILE__,__LINE__);
-	$arr = mysql_fetch_array($res);
+	$arr = mysqli_fetch_array($res);
 	if (!$arr)
 		stderr($lang_fun['std_error'], $lang_fun['std_invalid_id']);
 	if (get_user_class() < $funmanage_class)
@@ -36,7 +36,7 @@ if ($action == 'new')
 {
 	$sql = "SELECT *, IF(ADDTIME(added, '1 0:0:0') < NOW(),true,false) AS neednew FROM fun WHERE status != 'banned' AND status != 'dull' ORDER BY added DESC LIMIT 1";
 	$result = sql_query($sql) or sqlerr(__FILE__,__LINE__);
-	$row = mysql_fetch_array($result);
+	$row = mysqli_fetch_array($result);
 	if ($row && !$row['neednew'])
 		stderr($lang_fun['std_error'],$lang_fun['std_the_newest_fun_item'].htmlspecialchars($row['title']).$lang_fun['std_posted_on'].$row['added'].$lang_fun['std_need_to_wait']);
 	else {
@@ -54,7 +54,7 @@ if ($action == 'add')
 {
 	$sql = "SELECT *, IF(ADDTIME(added, '1 0:0:0') < NOW(),true,false) AS neednew FROM fun WHERE status != 'banned' AND status != 'dull' ORDER BY added DESC LIMIT 1";
 	$result = sql_query($sql) or sqlerr(__FILE__,__LINE__);
-	$row = mysql_fetch_array($result);
+	$row = mysqli_fetch_array($result);
 	if ($row && !$row['neednew'])
 		stderr($lang_fun['std_error'],$lang_fun['std_the_newest_fun_item'].htmlspecialchars($row['title']).$lang_fun['std_posted_on'].$row['added'].$lang_fun['std_need_to_wait']);
 	else {
@@ -70,7 +70,7 @@ if ($action == 'add')
 	$Cache->delete_value('current_fun', true);
 	$Cache->delete_value('current_fun_vote_count');
 	$Cache->delete_value('current_fun_vote_funny_count');
-	if (mysql_affected_rows() == 1)
+	if (sql_affected_rows() == 1)
 	$warning = $lang_fun['std_fun_added_successfully'];
 	else
 	stderr($lang_fun['std_error'],$lang_fun['std_error_happened']);
@@ -92,7 +92,7 @@ if ($action == 'view')
 print(get_style_addicode());
 if (!$row = $Cache->get_value('current_fun_content')){
 	$result = sql_query("SELECT fun.*, IF(ADDTIME(added, '1 0:0:0') < NOW(),true,false) AS neednew FROM fun WHERE status != 'banned' AND status != 'dull' ORDER BY added DESC LIMIT 1") or sqlerr(__FILE__,__LINE__);
-	$row = mysql_fetch_array($result);
+	$row = mysqli_fetch_array($result);
 	$Cache->cache_value('current_fun_content', $row, 1043);
 }
 if ($row){
@@ -126,7 +126,7 @@ if ($action == 'edit'){
 	$id = 0+$_GET["id"];
 	int_check($id,true);
 	$res = sql_query("SELECT * FROM fun WHERE id=$id") or sqlerr(__FILE__,__LINE__);
-	$arr = mysql_fetch_array($res);
+	$arr = mysqli_fetch_array($res);
 	if (!$arr)
 		stderr($lang_fun['std_error'], $lang_fun['std_invalid_id']);
 	if ($arr["userid"] != $CURUSER["id"] && get_user_class() < $funmanage_class)
@@ -168,7 +168,7 @@ if ($action == 'ban')
 	$id = 0+$_GET["id"];
 	int_check($id,true);
 	$res = sql_query("SELECT * FROM fun WHERE id=$id") or sqlerr(__FILE__,__LINE__);
-	$arr = mysql_fetch_array($res);
+	$arr = mysqli_fetch_array($res);
 	if (!$arr)
 		stderr($lang_fun['std_error'], $lang_fun['std_invalid_id']);
 	if ($_SERVER['REQUEST_METHOD'] == 'POST')
@@ -213,12 +213,12 @@ if ($action == 'vote')
 	$id = 0+$_GET["id"];
 	int_check($id,true);
 	$res = sql_query("SELECT * FROM fun WHERE id=$id") or sqlerr(__FILE__,__LINE__);
-	$arr = mysql_fetch_array($res);
+	$arr = mysqli_fetch_array($res);
 	if (!$arr)
 		stderr($lang_fun['std_error'], $lang_fun['std_invalid_id']);
 	else {
 		$res = sql_query("SELECT * FROM funvotes WHERE funid=$id AND userid = $CURUSER[id]") or sqlerr(__FILE__,__LINE__);
-		$checkvote = mysql_fetch_array($res);
+		$checkvote = mysqli_fetch_array($res);
 		if ($checkvote)
 			stderr($lang_fun['std_error'], $lang_fun['std_already_vote']);
 		else {

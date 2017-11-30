@@ -22,7 +22,7 @@ if (get_user_class() >= UC_SYSOP) {
 	echo("<td class=colhead align=left>Option Name</td><td class=colhead align=left>Info</td>");
 	$query = "SELECT * FROM sysoppanel";
 	$sql = sql_query($query);
-	while ($row = mysql_fetch_array($sql)) {
+	while ($row = mysqli_fetch_array($sql)) {
 		$id = $row['id'];
 		$name = $row['name'];
 		$url = $row['url'];
@@ -43,7 +43,7 @@ if (get_user_class() >= UC_ADMINISTRATOR) {
 	echo("<td class=colhead align=left>Option Name</td><td class=colhead align=left>Info</td>");
 	$query = "SELECT * FROM adminpanel";
 	$sql = sql_query($query);
-	while ($row = mysql_fetch_array($sql)) {
+	while ($row = mysqli_fetch_array($sql)) {
 		$id = $row['id'];
 		$name = $row['name'];
 		$url = $row['url'];
@@ -64,7 +64,7 @@ if (get_user_class() >= UC_MODERATOR) {
 	echo("<td class=colhead align=left>Option Name</td><td class=colhead align=left>Info</td>");
 	$query = "SELECT * FROM modpanel";
 	$sql = sql_query($query);
-	while ($row = mysql_fetch_array($sql)) {
+	while ($row = mysqli_fetch_array($sql)) {
 		$id = $row['id'];
 		$name = $row['name'];
 		$url = $row['url'];

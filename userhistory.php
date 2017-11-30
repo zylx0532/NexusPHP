@@ -33,7 +33,7 @@ if ($action == "viewposts")
 
 	$res = sql_query($query) or sqlerr(__FILE__, __LINE__);
 
-	$arr = mysql_fetch_row($res) or stderr($lang_userhistory['std_error'], $lang_userhistory['std_no_posts_found']);
+	$arr = sql_fetch_row($res) or stderr($lang_userhistory['std_error'], $lang_userhistory['std_no_posts_found']);
 
 	$postcount = $arr[0];
 
@@ -45,9 +45,9 @@ if ($action == "viewposts")
 
 	$res = sql_query("SELECT username, donor, warned, enabled FROM users WHERE id=$userid") or sqlerr(__FILE__, __LINE__);
 
-	if (mysql_num_rows($res) == 1)
+	if (sql_num_rows($res) == 1)
 	{
-		$arr = mysql_fetch_assoc($res);
+		$arr = mysqli_fetch_assoc($res);
 
 		$subject = get_username($userid);
 	}
@@ -64,7 +64,7 @@ if ($action == "viewposts")
 
 	$res = sql_query($query) or sqlerr(__FILE__, __LINE__);
 
-	if (mysql_num_rows($res) == 0) stderr($lang_userhistory['std_error'], $lang_userhistory['std_no_posts_found']);
+	if (sql_num_rows($res) == 0) stderr($lang_userhistory['std_error'], $lang_userhistory['std_no_posts_found']);
 
 	stdhead($lang_userhistory['head_posts_history']);
 
@@ -78,7 +78,7 @@ if ($action == "viewposts")
 
 	begin_frame();
 
-	while ($arr = mysql_fetch_assoc($res))
+	while ($arr = mysqli_fetch_assoc($res))
 	{
 		$postid = $arr["id"];
 
@@ -115,9 +115,9 @@ if ($action == "viewposts")
       if (is_valid_id($arr['editedby']))
       {
       	$subres = sql_query("SELECT username FROM users WHERE id=$arr[editedby]");
-      	if (mysql_num_rows($subres) == 1)
+      	if (sql_num_rows($subres) == 1)
       	{
-      		$subrow = mysql_fetch_assoc($subres);
+      		$subrow = mysqli_fetch_assoc($subres);
       		$body .= "<p><font size=1 class=small>".$lang_userhistory['text_last_edited'].get_username($arr['editedby']).$lang_userhistory['text_at']."$arr[editdate]</font></p>\n";
       	}
       }
@@ -156,7 +156,7 @@ if ($action == "viewcomments")
 
 	$res = sql_query($query) or sqlerr(__FILE__, __LINE__);
 
-	$arr = mysql_fetch_row($res) or stderr($lang_userhistory['std_error'], $lang_userhistory['std_no_comments_found']);
+	$arr = sql_fetch_row($res) or stderr($lang_userhistory['std_error'], $lang_userhistory['std_no_comments_found']);
 
 	$commentcount = $arr[0];
 
@@ -168,9 +168,9 @@ if ($action == "viewcomments")
 
 	$res = sql_query("SELECT username, donor, warned, enabled FROM users WHERE id=$userid") or sqlerr(__FILE__, __LINE__);
 
-	if (mysql_num_rows($res) == 1)
+	if (sql_num_rows($res) == 1)
 	{
-		$arr = mysql_fetch_assoc($res);
+		$arr = mysqli_fetch_assoc($res);
 
 		$subject = get_username($userid);
 	}
@@ -185,7 +185,7 @@ if ($action == "viewcomments")
 
 	$res = sql_query($query) or sqlerr(__FILE__, __LINE__);
 
-	if (mysql_num_rows($res) == 0) stderr($lang_userhistory['std_error'], $lang_userhistory['std_no_comments_found']);
+	if (sql_num_rows($res) == 0) stderr($lang_userhistory['std_error'], $lang_userhistory['std_no_comments_found']);
 
 	stdhead($lang_userhistory['head_comments_history']);
 
@@ -199,7 +199,7 @@ if ($action == "viewcomments")
 
 	begin_frame();
 
-	while ($arr = mysql_fetch_assoc($res))
+	while ($arr = mysqli_fetch_assoc($res))
 	{
 
 		$commentid = $arr["id"];
@@ -215,7 +215,7 @@ if ($action == "viewcomments")
 
 		$subres = sql_query("SELECT COUNT(*) FROM comments WHERE torrent = $torrentid AND id < $commentid")
 		or sqlerr(__FILE__, __LINE__);
-		$subrow = mysql_fetch_row($subres);
+		$subrow = sql_fetch_row($subres);
 		$count = $subrow[0];
 		$comm_page = floor($count/20);
 		$page_url = $comm_page?"&page=$comm_page":"";

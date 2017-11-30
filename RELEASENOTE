@@ -15,7 +15,7 @@ Release note for v1.5 beta 4 20100919
 Fix: "There is a minimum announce time of 30 seconds", caused by timezone settings. Now you should set correct timezone in php.ini
 Fix: varchar column length exceed 255 characters, which causes errors in MySQL 5.0.3 and later
 Mod: set mysql sql_mode in php level
-Mod: change mysql_pconnect to mysql_connect
+Mod: change mysql_pconnect to mysqli_connect
 Release note for v1.5 beta 4 20100905
 Add: promotion timeout setting per torrent
 Fix: some minor bugs

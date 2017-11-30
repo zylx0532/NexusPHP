@@ -11,7 +11,7 @@ if ($action == 'showlist') {
 	stdhead (VERSION." - Show List");
 	print("<table border=1 cellspacing=0 cellpadding=5 width=737>\n");
 	$sql = sql_query("SELECT * FROM bannedemails") or sqlerr(__FILE__, __LINE__);
-	$list = mysql_fetch_array($sql);
+	$list = mysqli_fetch_array($sql);
 ?>
 <form method=post action=bannedemails.php>
 <input type=hidden name=action value=savelist>

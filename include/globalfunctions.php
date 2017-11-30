@@ -8,8 +8,8 @@ function get_global_sp_state()
 	static $global_promotion_state;
 	if (!$global_promotion_state){
 		if (!$global_promotion_state = $Cache->get_value('global_promotion_state')){
-			$res = mysql_query("SELECT * FROM torrents_state");
-			$row = mysql_fetch_assoc($res);
+			$res = sql_query("SELECT * FROM torrents_state");
+			$row = mysqli_fetch_assoc($res);
 			$global_promotion_state = $row["global_sp_state"];
 			$Cache->cache_value('global_promotion_state', $global_promotion_state, 57226);
 		}
@@ -61,6 +61,9 @@ function getip() {
 			$ip = getenv('REMOTE_ADDR');
 		}
 	}
+    if($ip=="::1"){
+        $ip = "127.0.0.1";
+    }
 
 	return $ip;
 }
@@ -68,14 +71,52 @@ function getip() {
 function sql_query($query)
 {
 	global $query_name;
+	global $link;
 	$query_name[] = $query;
-	return mysql_query($query);
+	return mysqli_query($link,$query);
+}
+
+function sql_select_db($db)
+{
+	global $link;
+	return mysqli_select_db($link,$db);
+}
+
+function sql_real_escape_string($value)
+{
+	global $link;
+	return mysqli_real_escape_string($link,$value);
+}
+
+function sql_affected_rows($query)
+{
+	global $link;
+	return mysqli_affected_rows($query);
+}
+
+function sql_num_rows($result)
+{
+	return mysqli_num_rows($result);
+}
+
+function sql_fetch_row($result)
+{
+	return mysqli_fetch_row($result);
+}
+
+function sql_error()
+{
+	global $link;
+	return sql_error()($link);
 }
 
 function sqlesc($value) {
-		$value = "'" . mysql_real_escape_string($value) . "'";
+	global $link;
+	$value = "'" . sql_real_escape_string($value) . "'";
 	return $value;
 }
+
+
 
 function sqlnow(){
 	return sqlesc(date('Y-m-d H:i:s'));
@@ -103,7 +144,7 @@ function get_category_row($catid = NULL)
     static $rows;
     if (!$rows && !$rows = $Cache->get_value('category_content')){
         $res = sql_query("SELECT categories.*, searchbox.name AS catmodename FROM categories LEFT JOIN searchbox ON categories.mode=searchbox.id");
-        while($row = mysql_fetch_array($res)) {
+        while($row = mysqli_fetch_array($res)) {
             $rows[$row['id']] = $row;
         }
         $Cache->cache_value('category_content', $rows, 126400);

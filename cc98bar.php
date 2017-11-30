@@ -32,7 +32,7 @@ $bg = 0 + preg_replace($pattern, "\\44", $_SERVER['REQUEST_URI']);
 $id = preg_replace($pattern, "\\45", $_SERVER['REQUEST_URI']);
 
 $res = sql_query("SELECT username, uploaded, downloaded, class, privacy FROM users WHERE id=".sqlesc($id)." LIMIT 1");
-$row = mysql_fetch_array($res);
+$row = mysqli_fetch_array($res);
 if (!$row)
 	die;
 elseif($row['privacy'] == 'strong')

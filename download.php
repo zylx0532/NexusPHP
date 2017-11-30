@@ -7,7 +7,7 @@ if (!$id)
 $passkey = $_GET['passkey'];
 if ($passkey){
 	$res = sql_query("SELECT * FROM users WHERE passkey=". sqlesc($passkey)." LIMIT 1");
-	$user = mysql_fetch_array($res);
+	$user = mysqli_fetch_array($res);
 	if (!$user)
 		die("invalid passkey");
 	elseif ($user['enabled'] == 'no' || $user['parked'] == 'yes')
@@ -72,7 +72,7 @@ else{
 
 
 $res = sql_query("SELECT name, filename, save_as, size, owner, banned, category FROM torrents WHERE id = ".sqlesc($id)) or sqlerr(__FILE__, __LINE__);
-$row = mysql_fetch_assoc($res);
+$row = mysqli_fetch_assoc($res);
 if(!can_access_category($row['category'])) httperr();
 $fn = "$torrent_dir/$id.torrent";
 if ($CURUSER['downloadpos']=="no")

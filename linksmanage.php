@@ -84,10 +84,10 @@ if ($_GET['action'] == "del") {
 $id = 0 + $_GET['id'];
 if (!$id) { header("Location: linksmanage.php"); die();}
 $result = sql_query ("SELECT * FROM links where id = '".$id."'");
-if ($row = mysql_fetch_array($result))
+if ($row = mysqli_fetch_array($result))
 do {
 sql_query ("DELETE FROM links where id = '".$row["id"]."'") or sqlerr(__FILE__, __LINE__);
-} while($row = mysql_fetch_array($result));
+} while($row = mysqli_fetch_array($result));
 	$Cache->delete_value('links');
 header("Location: linksmanage.php");
 die();
@@ -117,7 +117,7 @@ if ($_POST['action'] == "add")
 	sql_query("INSERT INTO links (name, url, title) VALUES($linkname, $url, $title)") or sqlerr(__FILE__, __LINE__);
 	$res = sql_query("SELECT id FROM links WHERE name=$linkname");
 	$Cache->delete_value('links');
-	$arr = mysql_fetch_row($res);
+	$arr = sql_fetch_row($res);
 	if (!$arr)
 	stderr($lang_linksmanage['std_error'], $lang_linksmanage['std_unable_creating_new_link']);
 	header("Location: linksmanage.php");
@@ -140,17 +140,17 @@ echo '<h1>'.$lang_linksmanage['text_manage_links'].'</h1>';
 echo '<table width="80%"  border="0" align="center" cellpadding="2" cellspacing="0">';
 echo "<tr><td class=colhead align=left>".$lang_linksmanage['text_site_name']."</td><td class=colhead>".$lang_linksmanage['text_url']."</td><td class=colhead>".$lang_linksmanage['text_title']."</td><td class=colhead align=center>".$lang_linksmanage['text_modify']."</td></tr>";
 $result = sql_query ("SELECT * FROM links ORDER BY id ASC");
-if ($row = mysql_fetch_array($result)) {
+if ($row = mysqli_fetch_array($result)) {
 do {
 echo "<tr><td>".$row["name"]."</td><td>".$row["url"]."</td><td>".$row["title"]. "</td><td align=center nowrap><b><a href=\"".$PHP_SELF."?action=edit&id=".$row["id"]."\">".$lang_linksmanage['text_edit']."</a>&nbsp;|&nbsp;<a href=\"javascript:confirm_delete('".$row["id"]."', '".$lang_linksmanage['js_sure_to_delete_link']."', '');\"><font color=red>".$lang_linksmanage['text_delete']."</font></a></b></td></tr>";
-} while($row = mysql_fetch_array($result));
+} while($row = mysqli_fetch_array($result));
 } else {print "<tr><td colspan=4>".$lang_linksmanage['text_no_links_found']."</td></tr>";}
 echo "</table>";
 ?>
 <?php if ($_GET['action'] == "edit") {
 $id = 0 + ($_GET["id"]);
 $result = sql_query ("SELECT * FROM links where id = ".sqlesc($id));
-if ($row = mysql_fetch_array($result)) {
+if ($row = mysqli_fetch_array($result)) {
 ?>
 <h1><?php echo $lang_linksmanage['text_edit_link']?></h1>
 <form method=post action="<?php echo $_SERVER['PHP_SELF'];?>">

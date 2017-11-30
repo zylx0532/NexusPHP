@@ -30,22 +30,22 @@ if(!$body)
 
 
 // check if email addy is already in use
-$a = (@mysql_fetch_row(@sql_query("select count(*) from users where email=".sqlesc($email)))) or die(mysql_error());
+$a = (@sql_fetch_row(@sql_query("select count(*) from users where email=".sqlesc($email)))) or die(sql_error());
 if ($a[0] != 0)
   bark($lang_takeinvite['std_email_address'].htmlspecialchars($email).$lang_takeinvite['std_is_in_use']);
-$b = (@mysql_fetch_row(@sql_query("select count(*) from invites where invitee=".sqlesc($email)))) or die(mysql_error());
+$b = (@sql_fetch_row(@sql_query("select count(*) from invites where invitee=".sqlesc($email)))) or die(sql_error());
 if ($b[0] != 0)
   bark($lang_takeinvite['std_invitation_already_sent_to'].htmlspecialchars($email).$lang_takeinvite['std_await_user_registeration']);
 
 $ret = sql_query("SELECT username FROM users WHERE id = ".sqlesc($id)) or sqlerr();
-$arr = mysql_fetch_assoc($ret); 
+$arr = mysqli_fetch_assoc($ret); 
 
 $hash  = md5(mt_rand(1,10000).$CURUSER['username'].TIMENOW.$CURUSER['passhash']);
 
 $title = $SITENAME.$lang_takeinvite['mail_tilte'];
 
 if(!$i_obj->useInvite()) bark('Fail to use invitation.');
-sql_query("INSERT INTO invites (inviter, invitee, hash, time_invited) VALUES ('".mysql_real_escape_string($id)."', '".mysql_real_escape_string($email)."', '".mysql_real_escape_string($hash)."', " . sqlesc(date("Y-m-d H:i:s")) . ")");
+sql_query("INSERT INTO invites (inviter, invitee, hash, time_invited) VALUES ('".sql_real_escape_string($id)."', '".sql_real_escape_string($email)."', '".sql_real_escape_string($hash)."', " . sqlesc(date("Y-m-d H:i:s")) . ")");
 
 $message = <<<EOD
 {$lang_takeinvite['mail_one']}{$arr[username]}{$lang_takeinvite['mail_two']}

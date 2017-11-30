@@ -132,10 +132,10 @@ stdhead($lang_upload['head_upload']);
 
 				//==== offer dropdown for offer mod  from code by S4NE
 				$offerres = sql_query("SELECT id, name FROM offers WHERE userid = ".sqlesc($CURUSER[id])." AND allowed = 'allowed' ORDER BY name ASC") or sqlerr(__FILE__, __LINE__);
-				if (mysql_num_rows($offerres) > 0)
+				if (sql_num_rows($offerres) > 0)
 				{
 					$offer = "<select name=\"offer\"><option value=\"0\">".$lang_upload['select_choose_one']."</option>";
-					while($offerrow = mysql_fetch_array($offerres))
+					while($offerrow = mysqli_fetch_array($offerres))
 						$offer .= "<option value=\"" . $offerrow["id"] . "\">" . htmlspecialchars($offerrow["name"]) . "</option>";
 					$offer .= "</select>";
 					tr($lang_upload['row_your_offer']. (!$uploadfreely && !$allowspecial ? "<font color=red>*</font>" : ""), $offer.$lang_upload['text_please_select_offer'] , 1);

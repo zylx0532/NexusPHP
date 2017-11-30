@@ -196,7 +196,7 @@ if ($action == 'del')
 		stderr($lang_admanage['std_error'], $lang_admanage['std_invalid_id']);
 	}
 	$res = sql_query ("SELECT * FROM advertisements WHERE id = ".sqlesc($id)." LIMIT 1");
-	if ($row = mysql_fetch_array($res))
+	if ($row = mysqli_fetch_array($res))
 		sql_query("DELETE FROM advertisements WHERE id = ".sqlesc($row['id'])) or sqlerr(__FILE__, __LINE__);
 	$Cache->delete_value('current_ad_array', false);
 	header("Location: ".get_protocol_prefix() . $BASEURL."/admanage.php");
@@ -212,7 +212,7 @@ elseif ($action == 'edit')
 	else
 	{
 		$res = sql_query("SELECT * FROM advertisements WHERE id = ".sqlesc($id)." LIMIT 1");
-		if (!$row = mysql_fetch_array($res))
+		if (!$row = mysqli_fetch_array($res))
 			stderr($lang_admanage['std_error'], $lang_admanage['std_invalid_id']);
 		else
 		{
@@ -261,14 +261,14 @@ elseif ($action == 'submit')
 			{
 				$adid = $id;
 				$res = sql_query("SELECT * FROM advertisements WHERE id = ".sqlesc($id)." LIMIT 1");
-				if (!$row = mysql_fetch_array($res))
+				if (!$row = mysqli_fetch_array($res))
 					stderr($lang_admanage['std_error'], $lang_admanage['std_invalid_id']);
 			}
 		}
 		else
 		{
 			$res = sql_query("SELECT id FROM advertisements ORDER BY id DESC LIMIT 1");
-			$row = mysql_fetch_array($res);
+			$row = mysqli_fetch_array($res);
 			if (!$row)
 				$adid = 1;
 			else $adid = $row['id']+1;
@@ -395,7 +395,7 @@ begin_main_frame();
 <td class="colhead"><?php echo $lang_admanage['col_action']?></td>
 </tr>
 <?php
-while ($row = mysql_fetch_array($res))
+while ($row = mysqli_fetch_array($res))
 {
 	$clickcount=get_row_count("adclicks", "WHERE adid=".sqlesc($row['id']));
 ?>

@@ -9,7 +9,7 @@ $passkey = $_GET['passkey'];
 $where = "";
 if ($passkey){
 	$res = sql_query("SELECT id, enabled, parked FROM users WHERE passkey=". sqlesc($passkey)." LIMIT 1");
-	$user = mysql_fetch_array($res);
+	$user = mysqli_fetch_array($res);
 	if (!$user)
 		die("invalid passkey");
 	elseif ($user['enabled'] == 'no' || $user['parked'] == 'yes')
@@ -30,7 +30,7 @@ if ($passkey){
 		die('missing passkey');
 	}
 }
-$searchstr = mysql_real_escape_string(trim($_GET["search"]));
+$searchstr = sql_real_escape_string(trim($_GET["search"]));
 if (empty($searchstr))
 	unset($searchstr);
 if (isset($searchstr)){
@@ -169,7 +169,7 @@ print('
 		<atom:link href="'.$url.$_SERVER['REQUEST_URI'].'" rel="self" type="application/rss+xml" />');*/
 print('
 ');
-while ($row = mysql_fetch_array($res))
+while ($row = mysqli_fetch_array($res))
 {
 	$title = "";
 	if ($row['anonymous'] == 'yes')

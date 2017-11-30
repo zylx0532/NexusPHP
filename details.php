@@ -15,7 +15,7 @@ if (!isset($id) || !$id)
 die();
 
 $res = sql_query("SELECT torrents.cache_stamp, torrents.sp_state, torrents.promotion_time_type, torrents.promotion_until, torrents.url, torrents.small_descr, torrents.seeders, torrents.banned, torrents.leechers, torrents.info_hash, torrents.filename, nfo, LENGTH(torrents.nfo) AS nfosz, torrents.last_action, torrents.name, torrents.category, torrents.owner, torrents.save_as, torrents.descr, torrents.visible, torrents.size, torrents.added, torrents.views, torrents.hits, torrents.times_completed, torrents.id, torrents.type, torrents.numfiles, torrents.anonymous, categories.name AS cat_name, sources.name AS source_name, media.name AS medium_name, codecs.name AS codec_name, standards.name AS standard_name, processings.name AS processing_name, teams.name AS team_name, audiocodecs.name AS audiocodec_name, torrents.hr FROM torrents LEFT JOIN categories ON torrents.category = categories.id LEFT JOIN sources ON torrents.source = sources.id LEFT JOIN media ON torrents.medium = media.id LEFT JOIN codecs ON torrents.codec = codecs.id LEFT JOIN standards ON torrents.standard = standards.id LEFT JOIN processings ON torrents.processing = processings.id LEFT JOIN teams ON torrents.team = teams.id LEFT JOIN audiocodecs ON torrents.audiocodec = audiocodecs.id WHERE torrents.id = $id LIMIT 1") or sqlerr(__FILE__,__LINE__);
-$row = mysql_fetch_array($res);
+$row = mysqli_fetch_array($res);
 if(!can_access_category($row['category'])) permissiondenied();
 
 if (get_user_class() >= $torrentmanage_class || $CURUSER["id"] == $row["owner"])
@@ -120,9 +120,9 @@ else {
 		print("<tr><td class=\"rowhead\" valign=\"top\">".$lang_details['row_subtitles']."</td>");
 		print("<td class=\"rowfollow\" align=\"left\" valign=\"top\">");
 		print("<table border=\"0\" cellspacing=\"0\">");
-		if (mysql_num_rows($r) > 0)
+		if (sql_num_rows($r) > 0)
 		{
-			while($a = mysql_fetch_assoc($r))
+			while($a = mysqli_fetch_assoc($r))
 			{
 				$lang = "<tr><td class=\"embedded\"><img border=\"0\" src=\"pic/flag/". $a["flagpic"] . "\" alt=\"" . $a["lang_name"] . "\" title=\"" . $a["lang_name"] . "\" style=\"padding-bottom: 4px\" /></td>";
 				$lang .= "<td class=\"embedded\">&nbsp;&nbsp;<a href=\"downloadsubs.php?torrentid=".$a[torrent_id]."&subid=".$a[id]."\"><u>". $a["title"]. "</u></a>".(get_user_class() >= $submanage_class || (get_user_class() >= $delownsub_class && $a["uppedby"] == $CURUSER["id"]) ? " <font class=\"small\"><a href=\"subtitles.php?delete=".$a[id]."\">[".$lang_details['text_delete']."</a>]</font>" : "")."</td><td class=\"embedded\">&nbsp;&nbsp;".($a["anonymous"] == 'yes' ? $lang_details['text_anonymous'] . (get_user_class() >= $viewanonymous_class ? get_username($a['uppedby'],false,true,true,false,true) : "") : get_username($a['uppedby']))."</td></tr>";
@@ -332,7 +332,7 @@ else {
 								if($imdb_id_new = parse_imdb_id($imdb_config_inst->imdbsite . $similiar_movies_each['Link']))
 								{
 									$similiar_res = sql_query("SELECT id FROM torrents WHERE url = " . sqlesc((int)$imdb_id_new) . " AND id != ".sqlesc($id)." ORDER BY RAND() LIMIT 1") or sqlerr(__FILE__, __LINE__);
-									while($similiar_arr = mysql_fetch_array($similiar_res)) {
+									while($similiar_arr = mysqli_fetch_array($similiar_res)) {
 										$on_site = "<strong><a href=\"" .htmlspecialchars(get_protocol_prefix() . $BASEURL . "/details.php?id=" . $similiar_arr['id'] . "&hit=1")."\">" . $lang_details['text_local_link'] . "</a></strong>";
 									}
 								}
@@ -401,12 +401,12 @@ else {
 			$where_area = " url = " . sqlesc((int)$imdb_id) ." AND torrents.id != ".sqlesc($id);
 			$copies_res = sql_query("SELECT torrents.id, torrents.name, torrents.sp_state, torrents.size, torrents.added, torrents.hr, torrents.seeders, torrents.leechers, categories.id AS catid, categories.name AS catname, categories.image AS catimage, sources.name AS source_name, media.name AS medium_name, codecs.name AS codec_name, standards.name AS standard_name, processings.name AS processing_name FROM torrents LEFT JOIN categories ON torrents.category=categories.id LEFT JOIN sources ON torrents.source = sources.id LEFT JOIN media ON torrents.medium = media.id  LEFT JOIN codecs ON torrents.codec = codecs.id LEFT JOIN standards ON torrents.standard = standards.id LEFT JOIN processings ON torrents.processing = processings.id WHERE " . $where_area . " ORDER BY torrents.id DESC") or sqlerr(__FILE__, __LINE__);
 
-			$copies_count = mysql_num_rows($copies_res);
+			$copies_count = sql_num_rows($copies_res);
 			if($copies_count > 0)
 			{
 				$s = "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
 				$s.="<tr><td class=\"colhead\" style=\"padding: 0px; text-align:center;\">".$lang_details['col_type']."</td><td class=\"colhead\" align=\"left\">".$lang_details['col_name']."</td><td class=\"colhead\" align=\"center\">".$lang_details['col_quality']."</td><td class=\"colhead\" align=\"center\"><img class=\"size\" src=\"pic/trans.gif\" alt=\"size\" title=\"".$lang_details['title_size']."\" /></td><td class=\"colhead\" align=\"center\"><img class=\"time\" src=\"pic/trans.gif\" alt=\"time added\" title=\"".$lang_details['title_time_added']."\" /></td><td class=\"colhead\" align=\"center\"><img class=\"seeders\" src=\"pic/trans.gif\" alt=\"seeders\" title=\"".$lang_details['title_seeders']."\" /></td><td class=\"colhead\" align=\"center\"><img class=\"leechers\" src=\"pic/trans.gif\" alt=\"leechers\" title=\"".$lang_details['title_leechers']."\" /></td></tr>\n";
-				while ($copy_row = mysql_fetch_assoc($copies_res))
+				while ($copy_row = mysqli_fetch_assoc($copies_res))
 				{
 					$dispname = htmlspecialchars(trim($copy_row["name"]));
 					$count_dispname=strlen($dispname);
@@ -455,7 +455,7 @@ else {
 			tr($lang_details['row_torrent_info'], "<table><tr>" . ($files_info != "" ? "<td class=\"no_border_wide\">" . $files_info . "</td>" : "") . "<td class=\"no_border_wide\"></td></tr></table><span id='filelist'></span>",1);
 		tr($lang_details['row_hot_meter'], "<table><tr><td class=\"no_border_wide\"><b>" . $lang_details['text_views']."</b>". $row["views"] . "</td><td class=\"no_border_wide\"><b>" . $lang_details['text_hits']. "</b>" . $row["hits"] . "</td><td class=\"no_border_wide\"><b>" .$lang_details['text_snatched'] . "</b><a href=\"viewsnatches.php?id=".$id."\"><b>" . $row["times_completed"]. $lang_details['text_view_snatches'] . "</td><td class=\"no_border_wide\"><b>" . $lang_details['row_last_seeder']. "</b>" . gettime($row["last_action"]) . "</td></tr></table>",1);
 		$bwres = sql_query("SELECT uploadspeed.name AS upname, downloadspeed.name AS downname, isp.name AS ispname FROM users LEFT JOIN uploadspeed ON users.upload = uploadspeed.id LEFT JOIN downloadspeed ON users.download = downloadspeed.id LEFT JOIN isp ON users.isp = isp.id WHERE users.id=".$row['owner']);
-		$bwrow = mysql_fetch_array($bwres);
+		$bwrow = mysqli_fetch_array($bwres);
 		if ($bwrow['upname'] && $bwrow['downname'])
 			tr($lang_details['row_uploader_bandwidth'], "<img class=\"speed_down\" src=\"pic/trans.gif\" alt=\"Downstream Rate\" /> ".$bwrow['downname']."&nbsp;&nbsp;&nbsp;&nbsp;<img class=\"speed_up\" src=\"pic/trans.gif\" alt=\"Upstream Rate\" /> ".$bwrow['upname']."&nbsp;&nbsp;&nbsp;&nbsp;".$bwrow['ispname'],1);
 
@@ -469,7 +469,7 @@ else {
 			$i = 0;
 			$subres = sql_query("SELECT seeder, finishedat, downloadoffset, uploadoffset, ip, port, uploaded, downloaded, to_go, UNIX_TIMESTAMP(started) AS st, connectable, agent, peer_id, UNIX_TIMESTAMP(last_action) AS la, userid FROM peers WHERE torrent = $row[id]") or sqlerr();
 
-			while ($subrow = mysql_fetch_array($subres)) {
+			while ($subrow = mysqli_fetch_array($subres)) {
 				$progressPerTorrent += sprintf("%.2f", 100 * (1 - ($subrow["to_go"] / $row["size"])));
 				$i++;
 				if ($subrow["seeder"] == "yes")
@@ -578,16 +578,16 @@ echo "</script>";
 		$add_value ="";
 		
 		$tempresult = sql_query ("SELECT count( DISTINCT `userid` ) as count FROM magic WHERE torrentid=".sqlesc($id));
-		$count_user = mysql_fetch_array($tempresult);
+		$count_user = mysqli_fetch_array($tempresult);
 		$count_user_number = $count_user['count'];
 		
 		$give_value_sql = sql_query("SELECT userid,value FROM magic WHERE torrentid=".sqlesc($id)." ORDER BY id DESC");
 
 		$give_value_count = get_row_count("magic", "WHERE torrentid=".sqlesc($id));
-		$give_value_all = mysql_num_rows($give_value_sql);
+		$give_value_all = sql_num_rows($give_value_sql);
 		$sum_value = 0;
 		if ($give_value_all) {
-			while($rows_t = mysql_fetch_array($give_value_sql)) {
+			while($rows_t = mysqli_fetch_array($give_value_sql)) {
 				$give_value_userid = $rows_t["userid"];
 				$sum_value += $rows_t["value"]*1;
 				if ($give_value_userid == $CURUSER['id']) {
@@ -653,9 +653,9 @@ echo "</script>";
 		$thanks_said = 0;
 		$thanks_sql = sql_query("SELECT userid FROM thanks WHERE torrentid=".sqlesc($torrentid)." ORDER BY id DESC LIMIT 20");
 		$thanksCount = get_row_count("thanks", "WHERE torrentid=".sqlesc($torrentid));
-		$thanks_all = mysql_num_rows($thanks_sql);
+		$thanks_all = sql_num_rows($thanks_sql);
 		if ($thanks_all) {
-			while($rows_t = mysql_fetch_array($thanks_sql)) {
+			while($rows_t = mysqli_fetch_array($thanks_sql)) {
 				$thanks_userid = $rows_t["userid"];
 				if ($rows_t["userid"] == $CURUSER['id']) {
 					$thanks_said = 1;
@@ -697,7 +697,7 @@ if ($CURUSER['showcomment'] != 'no'){
 
 		$subres = sql_query("SELECT id, text, user, added, editedby, editdate FROM comments WHERE torrent = $id ORDER BY id $limit") or sqlerr(__FILE__, __LINE__);
 		$allrows = array();
-		while ($subrow = mysql_fetch_array($subres)) {
+		while ($subrow = mysqli_fetch_array($subres)) {
 			$allrows[] = $subrow;
 		}
 		print($pagertop);

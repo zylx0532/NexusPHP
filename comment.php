@@ -44,7 +44,7 @@ if ($action == "add")
 		else if($type == "request")
 			$res = sql_query("SELECT requests.request as name, userid as owner FROM requests WHERE id = $parent_id") or sqlerr(__FILE__,__LINE__);
 
-		$arr = mysql_fetch_array($res);
+		$arr = mysqli_fetch_array($res);
 		if (!$arr)
 			stderr($lang_comment['std_error'], $lang_comment['std_no_torrent_id']);
 
@@ -73,7 +73,7 @@ if ($action == "add")
 			sql_query("UPDATE requests SET comments = comments + 1 WHERE id = $parent_id");
 
 		$ras = sql_query("SELECT commentpm FROM users WHERE id = $arr[owner]") or sqlerr(__FILE__,__LINE__);
-		$arg = mysql_fetch_array($ras);
+		$arg = mysqli_fetch_array($ras);
 
 		if($arg["commentpm"] == 'yes' && $CURUSER['id'] != $arr["owner"])
 		{
@@ -115,10 +115,10 @@ if ($action == "add")
 
 		$res2 = sql_query("SELECT comments.text, users.username FROM comments JOIN users ON comments.user = users.id WHERE comments.id=$commentid") or sqlerr(__FILE__, __LINE__);
 
-		if (mysql_num_rows($res2) != 1)
+		if (sql_num_rows($res2) != 1)
 			stderr($lang_forums['std_error'], $lang_forums['std_no_comment_id']);
 
-		$arr2 = mysql_fetch_assoc($res2);
+		$arr2 = mysqli_fetch_assoc($res2);
 	}
 
 	if($type == "torrent"){
@@ -133,7 +133,7 @@ if ($action == "add")
 		$res = sql_query("SELECT requests.request as name, userid as owner FROM requests WHERE id = $parent_id") or sqlerr(__FILE__,__LINE__);
 		$url="viewrequests.php?id=$parent_id&req_details=1";
 	}
-	$arr = mysql_fetch_array($res);
+	$arr = mysqli_fetch_array($res);
 	if (!$arr)
 		stderr($lang_comment['std_error'], $lang_comment['std_no_torrent_id']);
 
@@ -161,7 +161,7 @@ elseif ($action == "edit")
 		else if($type == "request")
 			$res = sql_query("SELECT c.*, r.request as name, r.id AS parent_id FROM comments AS c JOIN requests AS r ON c.request = r.id WHERE c.id=$commentid") or sqlerr(__FILE__,__LINE__);
 
-		$arr = mysql_fetch_array($res);
+		$arr = mysqli_fetch_array($res);
 		if (!$arr)
 		stderr($lang_comment['std_error'], $lang_comment['std_invalid_id']);
 
@@ -231,7 +231,7 @@ elseif ($action == "delete")
 		else if($type == "request")
 		$res = sql_query("SELECT request as pid,user FROM comments WHERE id=$commentid")  or sqlerr(__FILE__,__LINE__);
 
-		$arr = mysql_fetch_array($res);
+		$arr = mysqli_fetch_array($res);
 		if ($arr)
 		{
 			$parent_id = $arr["pid"];
@@ -245,7 +245,7 @@ elseif ($action == "delete")
 			$Cache->delete_value('torrent_'.$arr['pid'].'_last_comment_content');
 		elseif ($type == "offer")
 			$Cache->delete_value('offer_'.$arr['pid'].'_last_comment_content');
-		if ($parent_id && mysql_affected_rows() > 0)
+		if ($parent_id && sql_affected_rows() > 0)
 		{
 			if($type == "torrent")
 			sql_query("UPDATE torrents SET comments = comments - 1 WHERE id = $parent_id") or sqlerr(__FILE__,__LINE__);
@@ -278,7 +278,7 @@ elseif ($action == "vieworiginal")
 		else if($type == "request")
 		$res = sql_query("SELECT c.*, r.request as name FROM comments AS c JOIN requests AS r ON c.request = r.id WHERE c.id=$commentid") or sqlerr(__FILE__,__LINE__);
 
-		$arr = mysql_fetch_array($res);
+		$arr = mysqli_fetch_array($res);
 		if (!$arr)
 		stderr($lang_comment['std_error'], $lang_comment['std_invalid_id']);
 

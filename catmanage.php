@@ -53,7 +53,7 @@ function return_category_mode_selection($selname, $selectionid)
 {
 	$res = sql_query("SELECT * FROM searchbox ORDER BY id ASC");
 	$selection = "<select name=\"".$selname."\">";
-	while ($row = mysql_fetch_array($res))
+	while ($row = mysqli_fetch_array($res))
 		$selection .= "<option value=\"" . $row["id"] . "\"". ($row["id"]==$selectedid ? " selected=\"selected\"" : "").">" . htmlspecialchars($row["name"]) . "</option>\n";
 	$selection .= "</select>";
 	return $selection;
@@ -160,7 +160,7 @@ function print_sub_category_list($type)
 <td class="colhead"><?php echo $lang_catmanage['col_action']?></td>
 </tr>
 <?php
-		while ($row = mysql_fetch_array($res))
+		while ($row = mysqli_fetch_array($res))
 		{
 ?>
 <tr>
@@ -401,7 +401,7 @@ if ($action == 'view')
 <td class="colhead"><?php echo $lang_catmanage['col_action']?></td>
 </tr>
 <?php
-		while ($row = mysql_fetch_array($res))
+		while ($row = mysqli_fetch_array($res))
 		{
 ?>
 <tr>
@@ -451,7 +451,7 @@ print($pagerbottom);
 <td class="colhead"><?php echo $lang_catmanage['col_action']?></td>
 </tr>
 <?php
-		while ($row = mysql_fetch_array($res))
+		while ($row = mysqli_fetch_array($res))
 		{
 ?>
 <tr>
@@ -500,7 +500,7 @@ print($pagerbottom);
 <td class="colhead"><?php echo $lang_catmanage['col_action']?></td>
 </tr>
 <?php
-		while ($row = mysql_fetch_array($res))
+		while ($row = mysqli_fetch_array($res))
 		{
 ?>
 <tr>
@@ -547,7 +547,7 @@ print($pagerbottom);
 <td class="colhead"><?php echo $lang_catmanage['col_action']?></td>
 </tr>
 <?php
-		while ($row = mysql_fetch_array($res))
+		while ($row = mysqli_fetch_array($res))
 		{
 ?>
 <tr>
@@ -582,7 +582,7 @@ elseif($action == 'del')
 	}
 	$dbtablename=return_category_db_table_name($type);
 	$res = sql_query ("SELECT * FROM ".$dbtablename." WHERE id = ".sqlesc($id)." LIMIT 1");
-	if ($row = mysql_fetch_array($res)){
+	if ($row = mysqli_fetch_array($res)){
 		sql_query("DELETE FROM ".$dbtablename." WHERE id = ".sqlesc($row['id'])) or sqlerr(__FILE__, __LINE__);
 		if(in_array($type, $validsubcattype))
 			$Cache->delete_value($dbtablename.'_list');
@@ -611,7 +611,7 @@ elseif($action == 'edit')
 	{
 		$dbtablename=return_category_db_table_name($type);
 		$res = sql_query ("SELECT * FROM ".$dbtablename." WHERE id = ".sqlesc($id)." LIMIT 1");
-		if (!$row = mysql_fetch_array($res))
+		if (!$row = mysqli_fetch_array($res))
 			stderr($lang_catmanage['std_error'], $lang_catmanage['std_invalid_id']);
 		else
 		{
@@ -648,7 +648,7 @@ elseif($action == 'submit')
 		else
 		{
 			$res = sql_query("SELECT * FROM ".$dbtablename." WHERE id = ".sqlesc($id)." LIMIT 1");
-			if (!$row = mysql_fetch_array($res))
+			if (!$row = mysqli_fetch_array($res))
 				stderr($lang_catmanage['std_error'], $lang_catmanage['std_invalid_id']);
 		}
 	}
@@ -746,7 +746,7 @@ elseif($action == 'submit')
 		$updateset[] = "audiocodec=".sqlesc($audiocodec);
 		if($_POST['isedit']){
 			$res2=sql_query("SELECT * FROM secondicons WHERE id=".sqlesc($id)." LIMIT 1");
-			if ($row2=mysql_fetch_array($res))
+			if ($row2=mysqli_fetch_array($res))
 			{
 				$Cache->delete_value('secondicon_'.$row2['source'].'_'.$row2['medium'].'_'.$row2['codec'].'_'.$row2['standard'].'_'.$row2['processing'].'_'.$row2['team'].'_'.$row2['audiocodec'].'_content');
 			}
