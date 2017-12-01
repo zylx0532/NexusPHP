@@ -38,29 +38,29 @@ class db {
 				$this->halt('Can not connect to MySQL server');
 			}
 		} else {
-			if(!$this->link = mysqli_connect($dbhost, $dbuser, $dbpw)) {
+			if(!$this->link = mysql_connect($dbhost, $dbuser, $dbpw)) {
 				$this->halt('Can not connect to MySQL server');
 			}
 		}
 
 		if($this->version() > '4.1') {
 			if($dbcharset) {
-				sql_query("SET character_set_connection=".$dbcharset.", character_set_results=".$dbcharset.", character_set_client=binary", $this->link);
+				mysql_query("SET character_set_connection=".$dbcharset.", character_set_results=".$dbcharset.", character_set_client=binary", $this->link);
 			}
 
 			if($this->version() > '5.0.1') {
-				sql_query("SET sql_mode=''", $this->link);
+				mysql_query("SET sql_mode=''", $this->link);
 			}
 		}
 
 		if($dbname) {
-			sql_select_db($dbname, $this->link);
+			mysql_select_db($dbname, $this->link);
 		}
 
 	}
 
 	function fetch_array($query, $result_type = MYSQL_ASSOC) {
-		return mysqli_fetch_array($query, $result_type);
+		return mysql_fetch_array($query, $result_type);
 	}
 
 	function result_first($sql) {
@@ -97,15 +97,15 @@ class db {
 	}
 
 	function affected_rows() {
-		return mysqli_affected_rows($link,$this->link);
+		return mysql_affected_rows($this->link);
 	}
 
 	function error() {
-		return (($this->link) ? mysql_error($this->link) : sql_error());
+		return (($this->link) ? mysql_error($this->link) : mysql_error());
 	}
 
 	function errno() {
-		return intval(($this->link) ? mysql_errno($this->link) : mysqli_errno($link));
+		return intval(($this->link) ? mysql_errno($this->link) : mysql_errno());
 	}
 
 	function result($query, $row) {
@@ -114,7 +114,7 @@ class db {
 	}
 
 	function num_rows($query) {
-		$query = sql_num_rows($query);
+		$query = mysql_fetch_row($query);
 		return $query;
 	}
 
@@ -131,7 +131,7 @@ class db {
 	}
 
 	function fetch_row($query) {
-		$query = sql_fetch_row($query);
+		$query = mysql_fetch_row($query);
 		return $query;
 	}
 
@@ -148,8 +148,8 @@ class db {
 	}
 
 	function halt($message = '', $sql = '') {
-		$error = sql_error();
-		$errorno = mysqli_errno($link);
+		$error = mysql_error();
+		$errorno = mysql_errno();
 		if($errorno == 2006 && $this->goneaway-- > 0) {
 			$this->connect($this->dbhost, $this->dbuser, $this->dbpw, $this->dbname, $this->dbcharset, $this->pconnect, $this->tablepre, $this->time);
 			$this->query($sql);
