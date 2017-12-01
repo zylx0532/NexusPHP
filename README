@@ -18,4 +18,6 @@ ignore config/allconfig.php, please restore it from config/allconfig.php.bak
 sync with hdxxxx pt site again;
 use mysql again from mysqli(compatible with  PHP5; compatible with product web site);
 update getip();update imdb.class.php;
+see https://github.com/cdwolfling/NexusPHP/compare/71e181156d745d0bd5ec3c585bc1707d729ce9da...7ab209d1ef06624cbac9d07f9cad43b91a07f699
+
 
