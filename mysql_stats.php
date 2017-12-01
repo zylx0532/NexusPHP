@@ -131,8 +131,8 @@ echo '<h1 align=center>' . "\n"
 /**
  * Sends the query and buffers the result
  */
-$res = @sql_query('SHOW STATUS') or Die(sql_error());
-	while ($row = sql_fetch_row($res)) {
+$res = @sql_query('SHOW STATUS') or Die(mysql_error());
+	while ($row = mysql_fetch_row($res)) {
 		$serverStatus[$row[0]] = $row[1];
 	}
 @mysql_free_result($res);
@@ -145,7 +145,7 @@ unset($row);
  */
 //Uptime calculation
 $res = @sql_query('SELECT UNIX_TIMESTAMP() - ' . $serverStatus['Uptime']);
-$row = sql_fetch_row($res);
+$row = mysql_fetch_row($res);
 //echo sprintf("Server Status Uptime", timespanFormat($serverStatus['Uptime']), localisedDate($row[0])) . "\n";
 ?>
 

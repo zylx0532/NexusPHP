@@ -8,7 +8,7 @@ stderr("Sorry", "Access denied.");
 $remove = (int)$_GET['remove'];
 if (is_valid_id($remove))
 {
-  sql_query("DELETE FROM bans WHERE id=".sql_real_escape_string($remove)) or sqlerr();
+  sql_query("DELETE FROM bans WHERE id=".mysql_real_escape_string($remove)) or sqlerr();
   write_log("Ban ".htmlspecialchars($remove)." was removed by $CURUSER[id] ($CURUSER[username])",'mod');
 }
 
@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && get_user_class() >= UC_ADMINISTRATOR
 		stderr("Error", "Bad IP address.");
 	$comment = sqlesc($comment);
 	$added = sqlesc(date("Y-m-d H:i:s"));
-	sql_query("INSERT INTO bans (added, addedby, first, last, comment) VALUES($added, ".sql_real_escape_string($CURUSER[id]).", $firstlong, $lastlong, $comment)") or sqlerr(__FILE__, __LINE__);
+	sql_query("INSERT INTO bans (added, addedby, first, last, comment) VALUES($added, ".mysql_real_escape_string($CURUSER[id]).", $firstlong, $lastlong, $comment)") or sqlerr(__FILE__, __LINE__);
 	header("Location: $_SERVER[REQUEST_URI]");
 	die;
 }
@@ -38,7 +38,7 @@ stdhead("Bans");
 
 print("<h1>Current Bans</h1>\n");
 
-if (sql_num_rows($res) == 0)
+if (mysql_num_rows($res) == 0)
   print("<p align=center><b>Nothing found</b></p>\n");
 else
 {
@@ -46,7 +46,7 @@ else
   print("<tr><td class=colhead>Added</td><td class=colhead align=left>First IP</td><td class=colhead align=left>Last IP</td>".
     "<td class=colhead align=left>By</td><td class=colhead align=left>Comment</td><td class=colhead>Remove</td></tr>\n");
 
-  while ($arr = mysqli_fetch_assoc($res))
+  while ($arr = mysql_fetch_assoc($res))
   {
  	  print("<tr><td>".gettime($arr[added])."</td><td align=left>".long2ip($arr[first])."</td><td align=left>".long2ip($arr[last])."</td><td align=left>". get_username($arr['addedby']) .
  	    "</td><td align=left>$arr[comment]</td><td><a href=bans.php?remove=$arr[id]>Remove</a></td></tr>\n");

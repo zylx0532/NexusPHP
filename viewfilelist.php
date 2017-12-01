@@ -17,7 +17,7 @@ if(isset($CURUSER))
 
 	$subres = sql_query("SELECT * FROM files WHERE torrent = ".sqlesc($id)." ORDER BY id");
 	$s.="<tr><td class=colhead>".$lang_viewfilelist['col_path']."</td><td class=colhead align=center><img class=\"size\" src=\"pic/trans.gif\" alt=\"size\" /></td></tr>\n";
-	while ($subrow = mysqli_fetch_array($subres)) {
+	while ($subrow = mysql_fetch_array($subres)) {
 		$s .= "<tr><td class=rowfollow>" . $subrow["filename"] . "</td><td class=rowfollow align=\"right\">" . mksize($subrow["size"]) . "</td></tr>\n";
 	}
 	$s .= "</table>\n";

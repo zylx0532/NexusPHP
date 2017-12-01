@@ -56,8 +56,8 @@ elseif ($action == 'savesettings_basic') 	// save basic
 	stdhead($lang_settings['head_save_basic_settings']);
 	$validConfig = array('SITENAME', 'BASEURL', 'announce_url', 'mysql_host', 'mysql_user', 'mysql_pass', 'mysql_db');
 	GetVar($validConfig);
-	if (!mysqli_connect($mysql_host, $mysql_user, $mysql_pass)) {
-		stdmsg($lang_settings['std_error'], $lang_settings['std_mysqli_connect_error'].$lang_settings['std_click']."<a class=\"altlink\" href=\"settings.php\">".$lang_settings['std_here']."</a>".$lang_settings['std_to_go_back']);
+	if (!mysql_connect($mysql_host, $mysql_user, $mysql_pass)) {
+		stdmsg($lang_settings['std_error'], $lang_settings['std_mysql_connect_error'].$lang_settings['std_click']."<a class=\"altlink\" href=\"settings.php\">".$lang_settings['std_here']."</a>".$lang_settings['std_to_go_back']);
 	} else {
 		dbconn();
 		unset($BASIC);
@@ -608,7 +608,7 @@ elseif ($action == 'mainsettings')	// main settings
 	$res = sql_query("SELECT id, name FROM searchbox") or sqlerr(__FILE__, __LINE__);
 	$catlist = '';
     $scatlist = sprintf('<input type="radio" name="specialcat" value="0"%s />Disabled&nbsp;', EchoChecked($specialcatmode == 0));
-	while($array = mysqli_fetch_assoc($res)){
+	while($array = mysql_fetch_assoc($res)){
 		$bcatlist .= "<input type=radio name=browsecat value='".$array['id']."'".($MAIN["browsecat"] == $array['id'] ? " checked" : "").">".$array['name']."&nbsp;";
 		$scatlist .= "<input type=radio name=specialcat value='".$array['id']."'".($MAIN["specialcat"] == $array['id'] ? " checked" : "").">".$array['name']."&nbsp;";
 	}
@@ -617,12 +617,12 @@ elseif ($action == 'mainsettings')	// main settings
     tr('特殊区名', sprintf('<input type="text" style="width: 100px" name="secondary_name" value="%s" />', htmlspecialchars($secondary_zone_name_main)), true);
 	$res = sql_query("SELECT * FROM language WHERE site_lang=1") or sqlerr(__FILE__, __LINE__);
 	$langlist = "";
-	while($array = mysqli_fetch_array($res))
+	while($array = mysql_fetch_array($res))
 		$langlist .= "<input type=radio name=defaultlang value='".$array['site_lang_folder']."'".($MAIN["defaultlang"] == $array['site_lang_folder'] ? " checked" : "").">".$array['lang_name']."&nbsp;";
 	tr($lang_settings['row_default_site_language'], $langlist."<br />".$lang_settings['text_default_site_language_note'], 1);
 	$res = sql_query("SELECT * FROM stylesheets ORDER BY name") or sqlerr(__FILE__, __LINE__);
 	$csslist = "<select name=defstylesheet>";
-	while($array = mysqli_fetch_array($res))
+	while($array = mysql_fetch_array($res))
 		$csslist .= "<option value='".$array['id']."'".($MAIN["defstylesheet"] == $array['id'] ? " selected" : "").">".$array['name']."</option>";
 	$csslist .= "</select>";
 	tr($lang_settings['row_default_stylesheet'], $csslist."<br />".$lang_settings['text_default_stylesheet_note'], 1);

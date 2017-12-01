@@ -21,7 +21,7 @@ if (!$id)
 	die();
 
 $res = sql_query("SELECT name,owner,seeders,anonymous FROM torrents WHERE id = ".sqlesc($id));
-$row = mysqli_fetch_array($res);
+$row = mysql_fetch_array($res);
 if (!$row)
 	die();
 

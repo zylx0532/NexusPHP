@@ -14,4 +14,8 @@ for more detail: please contact me:
 20171130:
 mysql-->mysqli; update getip();update imdb.class.php;
 ignore config/allconfig.php, please restore it from config/allconfig.php.bak
+20171201:
+sync with hdxxxx pt site again;
+use mysql again from mysqli(compatible with  PHP5; compatible with product web site);
+update getip();update imdb.class.php;
 

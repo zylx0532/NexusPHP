@@ -23,14 +23,14 @@ if ($action == "confirmuser")
 {
 	$userid = $_POST["userid"];
 	$confirm = $_POST["confirm"];
-	sql_query('UPDATE `users` SET `status` = \''.sql_real_escape_string($confirm).'\', `info` = NULL WHERE `id` = '.sql_real_escape_string($userid).' LIMIT 1;') or sqlerr(__FILE__, __LINE__);
+	sql_query('UPDATE `users` SET `status` = \''.mysql_real_escape_string($confirm).'\', `info` = NULL WHERE `id` = '.mysql_real_escape_string($userid).' LIMIT 1;') or sqlerr(__FILE__, __LINE__);
 	header("Location: " . get_protocol_prefix() . "$BASEURL/unco.php?status=1");
 	die;
 }elseif ($action == 'noexam'){
 	$userid = (int) $_POST['userid'];
 	if($userid > 0){
 		sql_query("UPDATE `users` SET `exam_deadline` = 0 WHERE `id` = $userid") or sqlerr(__FILE__,__LINE__);
-		if(sql_affected_rows()) write_log(sprintf("Exam of User %s(%u) is removed by %s(%u).", get_plain_username($userid), $userid, $CURUSER['username'], $CURUSER['id']), 'mod');
+		if(mysql_affected_rows()) write_log(sprintf("Exam of User %s(%u) is removed by %s(%u).", get_plain_username($userid), $userid, $CURUSER['username'], $CURUSER['id']), 'mod');
 	}
 	header("Location: " . $_SERVER['HTTP_REFERER']);
 	die;
@@ -71,7 +71,7 @@ if ($action == "confirmuser")
 	if (get_user_class() <= $class && $CURUSER['id'] != '20951')
 		stderr("Error", "You have no permission to change user's class to ".get_user_class_name($class,false,false,true).". BTW, how do you get here?");
 	$res = sql_query("SELECT * FROM users WHERE id = ".sqlesc($userid)) or sqlerr(__FILE__, __LINE__);
-	$arr = mysqli_fetch_assoc($res) or puke();
+	$arr = mysql_fetch_assoc($res) or puke();
 	
 	$curenabled = $arr["enabled"];
 	$curparked = $arr["parked"];

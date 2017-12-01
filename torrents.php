@@ -32,7 +32,7 @@ if ($showsubcat){
 }
 
 $searchstr_ori = htmlspecialchars(trim($_GET["search"]));
-$searchstr = sql_real_escape_string(trim($_GET["search"]));
+$searchstr = mysql_real_escape_string(trim($_GET["search"]));
 if (empty($searchstr))
 	unset($searchstr);
 
@@ -813,9 +813,9 @@ else
 	$sql = "SELECT COUNT(*), categories.mode FROM torrents LEFT JOIN categories ON category = categories.id " . ($search_area == 3 || $column == "owner" ? "LEFT JOIN users ON torrents.owner = users.id " : "") . $where." GROUP BY categories.mode";
 }
 
-$res = sql_query($sql) or die(sql_error());
+$res = sql_query($sql) or die(mysql_error());
 $count = 0;
-while($row = mysqli_fetch_array($res))
+while($row = mysql_fetch_array($res))
 	$count += $row[0];
 
 if ($CURUSER["torrentsperpage"])
@@ -854,7 +854,7 @@ if ($count)
 	if(!$self_snatched_data = $Cache->get_value($self_snatched_data_cache)){
 		$res = sql_query('SELECT `torrentid`, `to_go` FROM `snatched` WHERE `userid` = '.$CURUSER['id']) or sqlerr(__FILE__,__LINE__);
 		$self_snatched_data = array();
-		while($row = sql_fetch_row($res)) $self_snatched_data[$row[0]] = $row[1];
+		while($row = mysql_fetch_row($res)) $self_snatched_data[$row[0]] = $row[1];
 		$Cache->cache_value($self_snatched_data_cache,$self_snatched_data,300);
 	}
 	if ($allsec == 1 || $enablespecial != 'yes'){
@@ -1042,7 +1042,7 @@ if (!$Cache->get_page()){
 	$searchres = sql_query("SELECT keywords, COUNT(DISTINCT userid) as count FROM suggest WHERE adddate >" . $dt . " GROUP BY keywords ORDER BY count DESC LIMIT 15") or sqlerr();
 	$hotcount = 0;
 	$hotsearch = "";
-	while ($searchrow = mysqli_fetch_assoc($searchres))
+	while ($searchrow = mysql_fetch_assoc($searchres))
 	{
 		$hotsearch .= "<a href=\"".htmlspecialchars("?search=" . rawurlencode($searchrow["keywords"]) . "&notnewword=1")."\"><u>" . $searchrow["keywords"] . "</u></a>&nbsp;&nbsp;";
 		$hotcount += mb_strlen($searchrow["keywords"],"UTF-8");

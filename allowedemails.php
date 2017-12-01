@@ -13,7 +13,7 @@ if ($action == 'showlist') {
 	stdhead ("Show List");
 	print("<table border=1 cellspacing=0 cellpadding=5 width=737>\n");
 	$sql = sql_query("SELECT * FROM allowedemails") or sqlerr(__FILE__, __LINE__);
-	$list = mysqli_fetch_array($sql);
+	$list = mysql_fetch_array($sql);
 ?>
 <form method=post action=allowedemails.php>
 <input type=hidden name=action value=savelist>

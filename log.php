@@ -60,7 +60,7 @@ function additem($title, $action){
 function edititem($title, $action, $id){
 		global $lang_log;
 		$result = sql_query ("SELECT * FROM ".$action." where id = ".sqlesc($id)) or sqlerr(__FILE__, __LINE__);
-		if ($row = mysqli_fetch_array($result)) {
+		if ($row = mysql_fetch_array($result)) {
 		print("<table border=1 cellspacing=0 width=940 cellpadding=5>\n");
 		print("<tr><td class=colhead align=left>".$title."</td></tr>\n");
 		print("<tr><td class=toolbox align=left><form method=\"post\" action='" . $_SERVER['PHP_SELF'] . "'>\n");
@@ -84,7 +84,7 @@ else {
 	case "dailylog":
 		stdhead($lang_log['head_site_log']);
 
-		$query = sql_real_escape_string(trim($_GET["query"]));
+		$query = mysql_real_escape_string(trim($_GET["query"]));
 		$search = $_GET["search"];
 
 		$addparam = "";
@@ -112,7 +112,7 @@ else {
 		searchtable($lang_log['text_search_log'], 'dailylog',$opt);
 
 		$res = sql_query("SELECT COUNT(*) FROM sitelog".$wherea);
-		$row = mysqli_fetch_array($res);
+		$row = mysql_fetch_array($res);
 		$count = $row[0];
 
 		$perpage = 50;
@@ -120,7 +120,7 @@ else {
 		list($pagertop, $pagerbottom, $limit) = pager($perpage, $count, "log.php?action=dailylog&".$addparam);
 
 		$res = sql_query("SELECT added, txt FROM sitelog $wherea ORDER BY added DESC $limit") or sqlerr(__FILE__, __LINE__);
-		if (sql_num_rows($res) == 0)
+		if (mysql_num_rows($res) == 0)
 		print($lang_log['text_log_empty']);
 		else
 		{
@@ -129,7 +129,7 @@ else {
 
 			print("<table width=940 border=1 cellspacing=0 cellpadding=5>\n");
 			print("<tr><td class=colhead align=center><img class=\"time\" src=\"pic/trans.gif\" alt=\"time\" title=\"".$lang_log['title_time_added']."\" /></td><td class=colhead align=left>".$lang_log['col_event']."</td></tr>\n");
-			while ($arr = mysqli_fetch_assoc($res))
+			while ($arr = mysql_fetch_assoc($res))
 			{
 				$color = "";
 				if (strpos($arr['txt'],'was uploaded by')) $color = "green";
@@ -151,7 +151,7 @@ else {
 		break;
 	case "chronicle":
 		stdhead($lang_log['head_chronicle']);
-		$query = sql_real_escape_string(trim($_GET["query"]));
+		$query = mysql_real_escape_string(trim($_GET["query"]));
 		if($query){
 		$wherea=" WHERE txt LIKE '%$query%' ";
 		$addparam = "query=".rawurlencode($query)."&";
@@ -184,14 +184,14 @@ else {
 		}
 
 		$res = sql_query("SELECT COUNT(*) FROM chronicle".$wherea);
-		$row = mysqli_fetch_array($res);
+		$row = mysql_fetch_array($res);
 		$count = $row[0];
 
 		$perpage = 50;
 
 		list($pagertop, $pagerbottom, $limit) = pager($perpage, $count, "log.php?action=chronicle&".$addparam);
 		$res = sql_query("SELECT id, added, txt FROM chronicle $wherea ORDER BY added DESC $limit") or sqlerr(__FILE__, __LINE__);
-		if (sql_num_rows($res) == 0)
+		if (mysql_num_rows($res) == 0)
 		print($lang_log['text_chronicle_empty']);
 		else
 		{
@@ -200,7 +200,7 @@ else {
 
 			print("<table width=940 border=1 cellspacing=0 cellpadding=5>\n");
 			print("<tr><td class=colhead align=center>".$lang_log['col_date']."</td><td class=colhead align=left>".$lang_log['col_event']."</td>".(get_user_class() >= $chrmanage_class ? "<td class=colhead align=center>".$lang_log['col_modify']."</td>" : "")."</tr>\n");
-			while ($arr = mysqli_fetch_assoc($res))
+			while ($arr = mysql_fetch_assoc($res))
 			{
 				$date = gettime($arr['added'],true,false);
 				print("<tr><td class=rowfollow align=center><nobr>$date</nobr></td><td class=rowfollow align=left>".format_comment($arr["txt"],true,false,true)."</td>".(get_user_class() >= $chrmanage_class ? "<td align=center nowrap><b><a href=\"".$PHP_SELF."?action=chronicle&do=edit&id=".$arr["id"]."\">".$lang_log['text_edit']."</a>&nbsp;|&nbsp;<a href=\"".$PHP_SELF."?action=chronicle&do=del&id=".$arr["id"]."\"><font color=red>".$lang_log['text_delete']."</font></a></b></td>" : "")."</tr>\n");
@@ -216,7 +216,7 @@ else {
 		break;
 	case "funbox":
 		stdhead($lang_log['head_funbox']);
-		$query = sql_real_escape_string(trim($_GET["query"]));
+		$query = mysql_real_escape_string(trim($_GET["query"]));
 		$search = $_GET["search"];
 		if($query){
 			switch ($search){
@@ -234,19 +234,19 @@ else {
 		$opt = array (title => $lang_log['text_title'], body => $lang_log['text_body'], both => $lang_log['text_both']);
 		searchtable($lang_log['text_search_funbox'], 'funbox', $opt);
 		$res = sql_query("SELECT COUNT(*) FROM fun ".$wherea);
-		$row = mysqli_fetch_array($res);
+		$row = mysql_fetch_array($res);
 		$count = $row[0];
 
 		$perpage = 10;
 		list($pagertop, $pagerbottom, $limit) = pager($perpage, $count, "log.php?action=funbox&".$addparam);
 		$res = sql_query("SELECT added, body, title, status FROM fun $wherea ORDER BY added DESC $limit") or sqlerr(__FILE__, __LINE__);
-		if (sql_num_rows($res) == 0)
+		if (mysql_num_rows($res) == 0)
 			print($lang_log['text_funbox_empty']);
 		else
 		{
 
 		//echo $pagertop;
-			while ($arr = mysqli_fetch_assoc($res)){
+			while ($arr = mysql_fetch_assoc($res)){
 				$date = gettime($arr['added'],true,false);
 			print("<table width=940 border=1 cellspacing=0 cellpadding=5>\n");
 			print("<tr><td class=rowhead width='10%'>".$lang_log['col_title']."</td><td class=rowfollow align=left>".$arr["title"]." - <b>".$arr["status"]."</b></td></tr><tr><td class=rowhead width='10%'>".$lang_log['col_date']."</td><td class=rowfollow align=left>".$date."</td></tr><tr><td class=rowhead width='10%'>".$lang_log['col_body']."</td><td class=rowfollow align=left>".format_comment($arr["body"],false,false,true)."</td></tr>\n");
@@ -261,7 +261,7 @@ else {
 		break;
 	case "news":
 		stdhead($lang_log['head_news']);
-		$query = sql_real_escape_string(trim($_GET["query"]));
+		$query = mysql_real_escape_string(trim($_GET["query"]));
 		$search = $_GET["search"];
 		if($query){
 			switch ($search){
@@ -280,20 +280,20 @@ else {
 		searchtable($lang_log['text_search_news'], 'news', $opt);
 
 		$res = sql_query("SELECT COUNT(*) FROM news".$wherea);
-		$row = mysqli_fetch_array($res);
+		$row = mysql_fetch_array($res);
 		$count = $row[0];
 
 		$perpage = 20;
 
 		list($pagertop, $pagerbottom, $limit) = pager($perpage, $count, "log.php?action=news&".$addparam);
 		$res = sql_query("SELECT id, added, body, title FROM news $wherea ORDER BY added DESC $limit") or sqlerr(__FILE__, __LINE__);
-		if (sql_num_rows($res) == 0)
+		if (mysql_num_rows($res) == 0)
 		print($lang_log['text_news_empty']);
 		else
 		{
 
 		//echo $pagertop;
-			while ($arr = mysqli_fetch_assoc($res)){
+			while ($arr = mysql_fetch_assoc($res)){
 				$date = gettime($arr['added'],true,false);
 			print("<table width=940 border=1 cellspacing=0 cellpadding=5>\n");
 			print("<tr><td class=rowhead width='10%'>".$lang_log['col_title']."</td><td class=rowfollow align=left>".$arr["title"]."</td></tr><tr><td class=rowhead width='10%'>".$lang_log['col_date']."</td><td class=rowfollow align=left>".$date."</td></tr><tr><td class=rowhead width='10%'>".$lang_log['col_body']."</td><td class=rowfollow align=left>".format_comment($arr["body"],false,false,true)."</td></tr>\n");
@@ -335,7 +335,7 @@ else {
   }
 
   $rows = sql_query("SELECT COUNT(*) FROM polls") or sqlerr();
-  $row = sql_fetch_row($rows);
+  $row = mysql_fetch_row($rows);
   $pollcount = $row[0];
   if ($pollcount == 0)
   	stderr($lang_log['std_sorry'], $lang_log['std_no_polls']);
@@ -352,7 +352,7 @@ else {
       return 0;
     }
 
-  while ($poll = mysqli_fetch_assoc($polls))
+  while ($poll = mysql_fetch_assoc($polls))
   {
     $o = array($poll["option0"], $poll["option1"], $poll["option2"], $poll["option3"], $poll["option4"],
     $poll["option5"], $poll["option6"], $poll["option7"], $poll["option8"], $poll["option9"],
@@ -382,13 +382,13 @@ else {
 
     $pollanswers = sql_query("SELECT selection FROM pollanswers WHERE pollid=" . $poll["id"] . " AND  selection < 20") or sqlerr();
 
-    $tvotes = sql_num_rows($pollanswers);
+    $tvotes = mysql_num_rows($pollanswers);
 
     $vs = array(); // count for each option ([0]..[19])
     $os = array(); // votes and options: array(array(123, "Option 1"), array(45, "Option 2"))
 
     // Count votes
-    while ($pollanswer = sql_fetch_row($pollanswers))
+    while ($pollanswer = mysql_fetch_row($pollanswers))
       $vs[$pollanswer[0]] += 1;
 
     reset($o);

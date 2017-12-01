@@ -29,10 +29,10 @@ if (!$mailbox)
 if ($mailbox != PM_INBOX && $mailbox != PM_SENTBOX)
 {
 $res = sql_query('SELECT name FROM pmboxes WHERE userid=' . sqlesc($CURUSER['id']) . ' AND boxnumber=' . sqlesc($mailbox) . ' LIMIT 1') or sqlerr(__FILE__,__LINE__);
-if (sql_num_rows($res) == 0)
+if (mysql_num_rows($res) == 0)
 	stderr($lang_messages['std_error'],$lang_messages['std_invalid_mailbox']);
 
-$mailbox_name = mysqli_fetch_array($res);
+$mailbox_name = mysql_fetch_array($res);
 $mailbox_name = htmlspecialchars($mailbox_name[0]);
 }
 else
@@ -58,7 +58,7 @@ stdhead($mailbox_name);
 
 <?php
 //search
-		$keyword = sql_real_escape_string(trim($_GET["keyword"]));
+		$keyword = mysql_real_escape_string(trim($_GET["keyword"]));
 		$place = $_GET["place"];
 		if($keyword)
 			switch ($place){
@@ -78,7 +78,7 @@ stdhead($mailbox_name);
 if ($mailbox != PM_SENTBOX)
 {
 		$res = sql_query('SELECT COUNT(*) FROM messages WHERE receiver=' . sqlesc($CURUSER['id']) . ' AND location=' . sqlesc($mailbox).$wherea);
-		$row = mysqli_fetch_array($res);
+		$row = mysql_fetch_array($res);
 		$count = $row[0];
 
 		$perpage = ($CURUSER['pmnum'] ? $CURUSER['pmnum'] : 20);
@@ -91,7 +91,7 @@ sqlerr(__FILE__,__LINE__);
 else
 {
 		$res = sql_query('SELECT COUNT(*) FROM messages WHERE sender=' . sqlesc($CURUSER['id']) . ' AND saved=\'yes\''.$wherea);
-		$row = mysqli_fetch_array($res);
+		$row = mysql_fetch_array($res);
 		$count = $row[0];
 
 		$perpage = ($CURUSER['pmnum'] ? $CURUSER['pmnum'] : 20);
@@ -100,7 +100,7 @@ else
 $res = sql_query('SELECT * FROM messages WHERE sender=' . sqlesc($CURUSER['id']) . ' AND saved=\'yes\''.$wherea.' ORDER BY id DESC '.$limit) or sqlerr(__FILE__,__LINE__);
 }
 
-if (sql_num_rows($res) == 0)
+if (mysql_num_rows($res) == 0)
 {
 echo("<p align=\"center\">".$lang_messages['text_no_messages']."</p>\n");
 }
@@ -121,7 +121,7 @@ print("<td width=\"35%\" class=\"colhead\" align=\"left\">$sender_receiver</td>"
 <td width="1%" class="colhead" align="center"><?php echo $lang_messages['col_act'] ?></td>
 </tr>
 <?php
-while ($row = mysqli_fetch_assoc($res))
+while ($row = mysql_fetch_assoc($res))
 {
 // Get Sender Username
 if ($row['sender'] != 0)
@@ -166,7 +166,7 @@ if($mailbox != PM_SENTBOX){
 	echo $lang_messages['text_or'];
 	print("<input class=btn type=\"submit\" name=\"move\" value=\"".$lang_messages['submit_move_to']."\"> <select name=\"box\"><option value=\"1\">".$lang_messages['text_inbox']."</option>");
         $res = sql_query('SELECT * FROM pmboxes WHERE userid=' . sqlesc($CURUSER['id']) . ' ORDER BY boxnumber') or sqlerr(__FILE__,__LINE__);
-        while ($row = mysqli_fetch_assoc($res))
+        while ($row = mysql_fetch_assoc($res))
         {
           echo("<option value=\"" . $row['boxnumber'] . "\">" . htmlspecialchars($row['name']) . "</option>\n");
         }
@@ -206,7 +206,7 @@ if (!$res)
 }
 
 // Prepare for displaying message
-$message = mysqli_fetch_assoc($res) or header("Location: messages.php");
+$message = mysql_fetch_assoc($res) or header("Location: messages.php");
 if ($message['sender'] == $CURUSER['id'])
 {
 // Display to
@@ -272,7 +272,7 @@ messagemenu($mailbox);
 print("<form action=\"messages.php\" method=\"post\"><input type=\"hidden\" name=\"action\" value=\"moveordel\"><input type=\"hidden\" name=\"id\" value=".$pm_id.">
 <input type=\"submit\" name=\"move\" value=".$lang_messages['submit_move_to']."><select name=\"box\"><option value=\"1\">".$lang_messages['text_inbox']."</option>");
 $res = sql_query('SELECT * FROM pmboxes WHERE userid=' . sqlesc($CURUSER['id']) . ' ORDER BY boxnumber') or sqlerr(__FILE__,__LINE__);
-while ($row = mysqli_fetch_assoc($res))
+while ($row = mysql_fetch_assoc($res))
 {
 echo("<option value=\"" . $row['boxnumber'] . "\">" . htmlspecialchars($row['name']) . "</option>\n");
 }
@@ -306,7 +306,7 @@ if ($_POST['markread'])
 	}
 	$Cache->delete_value('user_'.$CURUSER['id'].'_unread_message_count');
 // Check if messages were moved
-	if (@sql_affected_rows() == 0)
+	if (@mysql_affected_rows() == 0)
 	{
 	stderr($lang_messages['std_error'],$lang_messages['std_cannot_mark_messages']);
 	}
@@ -328,7 +328,7 @@ else
 @sql_query("UPDATE messages SET location=" . sqlesc($pm_box) . " WHERE id IN (" . implode(", ", array_map("sqlesc",$pm_messages)) . ') AND receiver=' .$CURUSER['id']);
 }
 // Check if messages were moved
-if (@sql_affected_rows() == 0)
+if (@mysql_affected_rows() == 0)
 {
 stderr($lang_messages['std_error'],$lang_messages['std_cannot_move_messages']);
 }
@@ -344,7 +344,7 @@ if ($pm_id)
 {
 // Delete a single message
 $res = sql_query("SELECT * FROM messages WHERE id=" . sqlesc($pm_id)) or sqlerr(__FILE__,__LINE__);
-$message = mysqli_fetch_assoc($res);
+$message = mysql_fetch_assoc($res);
 if ($message['receiver'] == $CURUSER['id'] && $message['saved'] == 'no')
 {
 	sql_query("DELETE FROM messages WHERE id=" . sqlesc($pm_id)) or sqlerr(__FILE__,__LINE__);
@@ -376,7 +376,7 @@ stderr($lang_messages['std_error'], $lang_messages['std_no_message_selected']);
 foreach ($pm_messages as $id)
 {
 $res = sql_query("SELECT * FROM messages WHERE id=" . sqlesc((int) $id));
-$message = mysqli_fetch_assoc($res);
+$message = mysql_fetch_assoc($res);
 if ($message['receiver'] == $CURUSER['id'] && $message['saved'] == 'no')
 {
 sql_query("DELETE FROM messages WHERE id=" . sqlesc((int) $id)) or sqlerr(__FILE__,__LINE__);
@@ -399,7 +399,7 @@ sql_query("UPDATE messages SET saved='no' WHERE id=" . sqlesc((int) $id)) or sql
 	$Cache->delete_value('user_'.$CURUSER["id"].'_outbox_count');
 }
 // Check if messages were moved
-if (@sql_affected_rows() == 0)
+if (@mysql_affected_rows() == 0)
 {
 stderr($lang_messages['std_error'],$lang_messages['std_cannot_delete_messages']);
 }
@@ -424,11 +424,11 @@ if (!$res)
 {
 stderr($lang_messages['std_error'],$lang_messages['std_no_permission_forwarding']);
 }
-if (sql_num_rows($res) == 0)
+if (mysql_num_rows($res) == 0)
 {
 stderr($lang_messages['std_error'],$lang_messages['std_no_permission_forwarding']);
 }
-$message = mysqli_fetch_assoc($res);
+$message = mysql_fetch_assoc($res);
 
 // Prepare variables
 $subject = "Fwd: " . htmlspecialchars($message['subject']);
@@ -444,7 +444,7 @@ else
 {
 $orig_name = get_username($orig);
 $res = sql_query("SELECT username FROM users WHERE id=" . sqlesc($orig)) or sqlerr(__FILE__,__LINE__);
-$orig_nameres = mysqli_fetch_array($res);
+$orig_nameres = mysql_fetch_array($res);
 $orig_name2 = $orig_nameres['username'];
 }
 
@@ -520,13 +520,13 @@ if (!$res)
 {
 echo ("<span align=\"center\"><b>".$lang_messages['text_no_mailboxes_to_edit']."<b></span>");
 }
-if (sql_num_rows($res) == 0)
+if (mysql_num_rows($res) == 0)
 {
 echo ("<span align=\"center\"><b>".$lang_messages['text_no_mailboxes_to_edit']."</b></span>");
 }
 else
 {
-while ($row = mysqli_fetch_assoc($res))
+while ($row = mysql_fetch_assoc($res))
 {
 $id = $row['id'];
 $name = htmlspecialchars($row['name']);
@@ -555,7 +555,7 @@ $namethree = $_GET['new3'];
 
 // Get current max box number
 $res = sql_query("SELECT MAX(boxnumber) FROM pmboxes WHERE userid=" . sqlesc($CURUSER['id']));
-$box = mysqli_fetch_array($res);
+$box = mysql_fetch_array($res);
 $box = (int) $box[0];
 if ($box < 2)
 {
@@ -586,13 +586,13 @@ if (!$res)
 {
 stderr($lang_messages['std_error'],$lang_messages['text_no_mailboxes_to_edit']);
 }
-if (sql_num_rows($res) == 0)
+if (mysql_num_rows($res) == 0)
 {
 stderr($lang_messages['std_error'],$lang_messages['text_no_mailboxes_to_edit']);
 }
 else
 {
-while ($row = mysqli_fetch_assoc($res))
+while ($row = mysql_fetch_assoc($res))
 {
 if (isset($_GET['edit' . $row['id']]))
 {
@@ -632,11 +632,11 @@ if (!$res)
 {
 stderr($lang_messages['std_error'],$lang_messages['std_no_message_id']);
 }
-if (sql_num_rows($res) == 0)
+if (mysql_num_rows($res) == 0)
 {
 stderr($lang_messages['std_error'],$lang_messages['std_no_message_id']);
 }
-$message = mysqli_fetch_assoc($res);
+$message = mysql_fetch_assoc($res);
 if ($message['receiver'] == $CURUSER['id'] && $message['saved'] == 'no')
 {
 $res2 = sql_query("DELETE FROM messages WHERE id=" . sqlesc($pm_id)) or sqlerr(__FILE__,__LINE__);
@@ -657,7 +657,7 @@ if (!$res2)
 {
 stderr($lang_messages['std_error'],$lang_messages['std_could_not_delete_message']);
 }
-if (sql_affected_rows() == 0)
+if (mysql_affected_rows() == 0)
 {
 stderr($lang_messages['std_error'],$lang_messages['std_could_not_delete_message']);
 }
@@ -687,7 +687,7 @@ $place = $_GET['place'];
 <option value="1" <?php echo ($selected == PM_INBOX ? " selected" : "")?>><?php echo $lang_messages['select_inbox'] ?></option>
 <option value="-1" <?php echo ($selected == PM_SENTBOX ? " selected" : "")?>><?php echo $lang_messages['select_sentbox'] ?></option>
 <?php
-while ($row = mysqli_fetch_assoc($res))
+while ($row = mysql_fetch_assoc($res))
 {
 if ($row['boxnumber'] == $selected)
 {
@@ -711,8 +711,8 @@ function messagemenu ($selected = 1) {
 	print ("<li" . ($selected == 1 ? " class=selected" : "") . "><a href=\"" . get_protocol_prefix() . $BASEURL . "/messages.php\" >".$lang_messages['text_inbox']."</a></li>");
 	print ("<li" . ($selected == -1 ? " class=selected" : "") . "><a href=\"" . get_protocol_prefix() . $BASEURL . "/messages.php?action=viewmailbox&box=-1\">".$lang_messages['text_sentbox']."</a></li>");
 	$res = sql_query('SELECT * FROM pmboxes WHERE userid=' . sqlesc($CURUSER['id'])) or sqlerr(__FILE__,__LINE__);
-	if (sql_num_rows($res))
-		while ($row = mysqli_fetch_assoc($res))
+	if (mysql_num_rows($res))
+		while ($row = mysql_fetch_assoc($res))
 		{
 		print ("<li" . ($selected == $row['boxnumber'] ? " class=selected" : "") . "><a href=\"" . get_protocol_prefix() . $BASEURL . "/messages.php?action=viewmailbox&box=".$row['boxnumber']."\">".$row['name']."</a></li>");
 		}

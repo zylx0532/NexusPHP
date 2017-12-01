@@ -8,7 +8,7 @@ if (isset($_GET['del']))
 	{
 		if((get_user_class() >= $sbmanage_class))
 		{
-			sql_query("DELETE FROM shoutbox WHERE id=".sql_real_escape_string($_GET['del']));
+			sql_query("DELETE FROM shoutbox WHERE id=".mysql_real_escape_string($_GET['del']));
 		}
 	}
 }
@@ -122,13 +122,13 @@ else {
 die("<h1>".$lang_shoutbox['std_access_denied']."</h1>"."<p>".$lang_shoutbox['std_access_denied_note']."</p></body></html>");
 }
 $res = sql_query($sql) or sqlerr(__FILE__, __LINE__);
-if (sql_num_rows($res) == 0)
+if (mysql_num_rows($res) == 0)
 print("\n");
 else
 {
 	print("<table border='0' cellspacing='0' cellpadding='2' width='100%' align='left'>\n");
 
-	while ($arr = mysqli_fetch_assoc($res))
+	while ($arr = mysql_fetch_assoc($res))
 	{
 		if (get_user_class() >= $sbmanage_class) {
 			$del="[<a href=\"shoutbox.php?del=".$arr[id]."\">".$lang_shoutbox['text_del']."</a>]";

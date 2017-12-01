@@ -21,13 +21,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 		stderr("Error","Invalid username.");
 	$username = sqlesc($username);
 	$res = sql_query("SELECT id FROM users WHERE username=$username");
-	$arr = sql_fetch_row($res);
+	$arr = mysql_fetch_row($res);
 	if ($arr)
 		stderr("Error","Username already exists!");
 	$password = $_POST["password"];
 	$email = sqlesc($_POST["email"]);
 	$res = sql_query("SELECT id FROM users WHERE email=$email");
-	$arr = sql_fetch_row($res);
+	$arr = mysql_fetch_row($res);
 	if ($arr)
 		stderr("Error","The e-mail address is already in use.");
 	$secret = mksecret();
@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 
 	sql_query("INSERT INTO users (added, last_access, secret, username, passhash, status, stylesheet, class,email) VALUES(NOW(), NOW(), $secret, $username, $passhash, 'confirmed', ".$defcss.",".$defaultclass_class.",$email)") or sqlerr(__FILE__, __LINE__);
 	$res = sql_query("SELECT id FROM users WHERE username=$username");
-	$arr = sql_fetch_row($res);
+	$arr = mysql_fetch_row($res);
 	if (!$arr)
 	stderr("Error", "Unable to create the account. The user name is possibly already taken.");
 	header("Location: " . get_protocol_prefix() . "$BASEURL/userdetails.php?id=".htmlspecialchars($arr[0]));

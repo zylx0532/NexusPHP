@@ -35,14 +35,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 	if (!check_email($email))
 	failedlogins($lang_recover['std_invalid_email_address'],true);
 	$res = sql_query("SELECT * FROM users WHERE email=" . sqlesc($email) . " LIMIT 1") or sqlerr(__FILE__, __LINE__);
-	$arr = mysqli_fetch_assoc($res);
+	$arr = mysql_fetch_assoc($res);
 	if (!$arr) failedlogins($lang_recover['std_email_not_in_database'],true);
 	if ($arr['status'] == "pending") failedlogins($lang_recover['std_user_account_unconfirmed'],true);
 
 	$sec = mksecret();
 
 	sql_query("UPDATE users SET editsecret=" . sqlesc($sec) . " WHERE id=" . sqlesc($arr["id"])) or sqlerr(__FILE__, __LINE__);
-	if (!sql_affected_rows())
+	if (!mysql_affected_rows())
 	stderr($lang_recover['std_error'], $lang_recover['std_database_error']);
 
 	$hash = md5($sec . $email . $arr["passhash"] . $sec);
@@ -69,7 +69,7 @@ elseif($_SERVER["REQUEST_METHOD"] == "GET" && $take_recover && isset($_GET["id"]
 	}
 
 	$res = sql_query("SELECT username, email, passhash, editsecret FROM users WHERE id = " . sqlesc($id)) or sqlerr(__FILE__, __LINE__);
-	$arr = mysqli_fetch_array($res) or httperr();
+	$arr = mysql_fetch_array($res) or httperr();
 
 	$email = $arr["email"];
 
@@ -92,7 +92,7 @@ elseif($_SERVER["REQUEST_METHOD"] == "GET" && $take_recover && isset($_GET["id"]
 
 	sql_query("UPDATE users SET secret=" . sqlesc($sec) . ", editsecret='', passhash=" . sqlesc($newpasshash) . " WHERE id=" . sqlesc($id)." AND editsecret=" . sqlesc($arr["editsecret"])) or sqlerr(__FILE__, __LINE__);
 
-	if (!sql_affected_rows())
+	if (!mysql_affected_rows())
 	stderr($lang_recover['std_error'], $lang_recover['std_unable_updating_user_data']);
 	$title = $SITENAME.$lang_recover['mail_two_title'];
 	$body = <<<EOD

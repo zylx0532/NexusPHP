@@ -20,7 +20,7 @@ int_check($id);
 $sure = $_GET["sure"];
 
 $res = sql_query("SELECT name,owner,seeders,anonymous FROM torrents WHERE id = $id");
-$row = mysqli_fetch_array($res);
+$row = mysql_fetch_array($res);
 if (!$row)
     die();
 

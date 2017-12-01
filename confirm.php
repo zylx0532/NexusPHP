@@ -10,7 +10,7 @@ if (!$id)
 dbconn();
 
 $res = sql_query("SELECT passhash, secret, editsecret, status FROM users WHERE id = ".sqlesc($id)) or sqlerr(__FILE__, __LINE__);
-$row = mysqli_fetch_assoc($res);
+$row = mysql_fetch_assoc($res);
 
 if (!$row)
 	httperr();
@@ -26,7 +26,7 @@ if ($confirm_md5 != md5($confirm_sec))
 
 sql_query("UPDATE users SET status='confirmed', editsecret='' WHERE id=".sqlesc($id)." AND status='pending'") or sqlerr(__FILE__, __LINE__);
 
-if (!sql_affected_rows())
+if (!mysql_affected_rows())
 	httperr();
 
 	

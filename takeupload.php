@@ -335,10 +335,10 @@ foreach ($promotionrules_torrent as $rule)
 $ret = sql_query("INSERT INTO torrents (filename, owner, visible, anonymous, name, size, numfiles, type, url, small_descr, descr, ori_descr, category, source, medium, codec, audiocodec, standard, processing, team, save_as, sp_state, added, last_action, nfo, info_hash, hr) VALUES (".sqlesc($fname).", ".sqlesc($CURUSER["id"]).", 'yes', ".sqlesc($anonymous).", ".sqlesc($torrent).", ".sqlesc($totallen).", ".count($filelist).", ".sqlesc($type).", ".sqlesc($url).", ".sqlesc($small_descr).", ".sqlesc($descr).", ".sqlesc($descr).", ".sqlesc($catid).", ".sqlesc($sourceid).", ".sqlesc($mediumid).", ".sqlesc($codecid).", ".sqlesc($audiocodecid).", ".sqlesc($standardid).", ".sqlesc($processingid).", ".sqlesc($teamid).", ".sqlesc($dname).", ".sqlesc($sp_state) .
 ", " . sqlesc(date("Y-m-d H:i:s")) . ", " . sqlesc(date("Y-m-d H:i:s")) . ", ".sqlesc($nfo).", " . sqlesc($infohash). ", $hr)");
 if (!$ret) {
-	if (mysqli_errno($link) == 1062)
+	if (mysql_errno() == 1062)
 	bark($lang_takeupload['std_torrent_existed']);
-	bark("mysql puked: ".sql_error());
-	//bark("mysql puked: ".preg_replace_callback('/./s', "hex_esc2", sql_error()));
+	bark("mysql puked: ".mysql_error());
+	//bark("mysql puked: ".preg_replace_callback('/./s', "hex_esc2", mysql_error()));
 }
 $id = mysql_insert_id();
 
@@ -367,7 +367,7 @@ if ($is_offer)
 {
 	$res = sql_query("SELECT `userid` FROM `offervotes` WHERE `userid` != " . $CURUSER["id"] . " AND `offerid` = ". sqlesc($offerid)." AND `vote` = 'yeah'") or sqlerr(__FILE__, __LINE__);
 
-	while($row = mysqli_fetch_assoc($res)) 
+	while($row = mysql_fetch_assoc($res)) 
 	{
 		$pn_msg = $lang_takeupload_target[get_user_lang($row["userid"])]['msg_offer_you_voted'].$torrent.$lang_takeupload_target[get_user_lang($row["userid"])]['msg_was_uploaded_by']. $CURUSER["username"] .$lang_takeupload_target[get_user_lang($row["userid"])]['msg_you_can_download'] ."[url=" . get_protocol_prefix() . "$BASEURL/details.php?id=$id&hit=1]".$lang_takeupload_target[get_user_lang($row["userid"])]['msg_here']."[/url]";
 		
@@ -434,7 +434,7 @@ $body_arr[$langfolder_array[$i]] = str_replace("<br />","<br />",nl2br($body_arr
 	$i++;
 }
 
-while($arr = mysqli_fetch_array($res))
+while($arr = mysql_fetch_array($res))
 {
 		$current_lang = $arr["lang"];
 		$to = $arr["email"];

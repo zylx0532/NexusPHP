@@ -53,9 +53,9 @@ $inviter =  $_POST["inviter"];
 $code = unesc($_POST["hash"]);
 
 //check invite code
-	$sq = sprintf("SELECT inviter FROM invites WHERE hash ='%s'",sql_real_escape_string($code));
+	$sq = sprintf("SELECT inviter FROM invites WHERE hash ='%s'",mysql_real_escape_string($code));
 	$res = sql_query($sq) or sqlerr(__FILE__, __LINE__);
-	$inv = mysqli_fetch_assoc($res);
+	$inv = mysql_fetch_assoc($res);
 	if (!$inv)
 		bark('invalid invite code');
 
@@ -63,7 +63,7 @@ $ip = getip();
 
 
 $res = sql_query("SELECT username FROM users WHERE id = $inviter") or sqlerr(__FILE__, __LINE__);
-$arr = mysqli_fetch_assoc($res);
+$arr = mysql_fetch_assoc($res);
 $invusername = $arr[username];
 }
 
@@ -124,7 +124,7 @@ if ($_POST["rulesverify"] != "yes" || $_POST["faqverify"] != "yes" || $_POST["ag
 	stderr($lang_takesignup['std_signup_failed'], $lang_takesignup['std_unqualified']);
 
 // check if email addy is already in use
-$a = (@sql_fetch_row(@sql_query("select count(*) from users where email='".sql_real_escape_string($email)."'"))) or sqlerr(__FILE__, __LINE__);
+$a = (@mysql_fetch_row(@sql_query("select count(*) from users where email='".mysql_real_escape_string($email)."'"))) or sqlerr(__FILE__, __LINE__);
 if ($a[0] != 0)
   bark($lang_takesignup['std_email_address'].$email.$lang_takesignup['std_in_use']);
   
@@ -134,7 +134,7 @@ if (isproxy())
 	bark("You appear to be connecting through a proxy server. Your organization or ISP may use a transparent caching HTTP proxy. Please try and access the site on <a href="." . get_protocol_prefix() . "$BASEURL.":81/signup.php>port 81</a> (this should bypass the proxy server). <p><b>Note:</b> if you run an Internet-accessible web server on the local machine you need to shut it down until the sign-up is complete.");
 
 $res = sql_query("SELECT COUNT(*) FROM users") or sqlerr(__FILE__, __LINE__);
-$arr = sql_fetch_row($res);
+$arr = mysql_fetch_row($res);
 */
 
 $secret = mksecret();
@@ -154,7 +154,7 @@ $sitelangid = sqlesc(get_langid_from_langcookie());
 
 $res_check_user = sql_query("SELECT * FROM users WHERE username = " . $wantusername);
 
-if(sql_num_rows($res_check_user) == 1)
+if(mysql_num_rows($res_check_user) == 1)
   bark($lang_takesignup['std_username_exists']);
 
 $deadline = $enabled_exam && $deadline_exam > 0 ? TIMENOW + $deadline_exam * 86400 : 0;
@@ -168,7 +168,7 @@ sql_query("INSERT INTO messages (sender, receiver, subject, added, msg) VALUES(0
 
 //write_log("User account $id ($wantusername) was created");
 $res = sql_query("SELECT passhash, secret, editsecret, status FROM users WHERE id = ".sqlesc($id)) or sqlerr(__FILE__, __LINE__);
-$row = mysqli_fetch_assoc($res);
+$row = mysql_fetch_assoc($res);
 $psecret = md5($row['secret']);
 $ip = getip();
 $usern = htmlspecialchars($wantusername);
@@ -188,7 +188,7 @@ EOD;
 if ($type == 'invite')
 {
 //don't forget to delete confirmed invitee's hash code from table invites
-sql_query("DELETE FROM invites WHERE hash = '".sql_real_escape_string($code)."'");
+sql_query("DELETE FROM invites WHERE hash = '".mysql_real_escape_string($code)."'");
 $dt = sqlesc(date("Y-m-d H:i:s"));
 $subject = sqlesc($lang_takesignup_target[get_user_lang($inviter)]['msg_invited_user_has_registered']);
 $msg = sqlesc($lang_takesignup_target[get_user_lang($inviter)]['msg_user_you_invited'].$usern.$lang_takesignup_target[get_user_lang($inviter)]['msg_has_registered']);

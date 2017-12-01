@@ -95,7 +95,7 @@ function dltable($name, $arr, $torrent)
 	$downloaders = array();
 	$seeders = array();
 	$subres = sql_query("SELECT seeder, finishedat, downloadoffset, uploadoffset, ip, port, uploaded, downloaded, to_go, UNIX_TIMESTAMP(started) AS st, connectable, agent, peer_id, UNIX_TIMESTAMP(last_action) AS la, userid FROM peers WHERE torrent = $id") or sqlerr();
-	while ($subrow = mysqli_fetch_array($subres)) {
+	while ($subrow = mysql_fetch_array($subres)) {
 	if ($subrow["seeder"] == "yes")
 		$seeders[] = $subrow;
 	else
@@ -121,7 +121,7 @@ function dltable($name, $arr, $torrent)
 		return -1;
 	}
 	$res = sql_query("SELECT torrents.id, torrents.owner, torrents.size, torrents.anonymous FROM torrents WHERE torrents.id = $id LIMIT 1") or sqlerr();
-	$row = mysqli_fetch_array($res);
+	$row = mysql_fetch_array($res);
 	usort($seeders, "seed_sort");
 	usort($downloaders, "leech_sort");
 

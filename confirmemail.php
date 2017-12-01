@@ -15,7 +15,7 @@ if (!$id)
 dbconn();
 
 $res = sql_query("SELECT editsecret FROM users WHERE id = $id");
-$row = mysqli_fetch_array($res);
+$row = mysql_fetch_array($res);
 
 if (!$row)
 	httperr();
@@ -28,7 +28,7 @@ if ($md5 != md5($sec . $email . $sec))
 
 sql_query("UPDATE users SET editsecret='', email=" . sqlesc($email) . " WHERE id=$id AND editsecret=" . sqlesc($row["editsecret"]));
 
-if (!sql_affected_rows())
+if (!mysql_affected_rows())
 	httperr();
 
 header("Refresh: 0; url=" . get_protocol_prefix() . "$BASEURL/usercp.php?action=security&type=saved");

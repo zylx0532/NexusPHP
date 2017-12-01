@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] != "POST")
 		if (!$origmsg)
 			stderr($lang_takemessage['std_error'], $lang_takemessage['std_invalid_id']);
 		$res = sql_query("SELECT * FROM messages WHERE id=" . sqlesc($origmsg) . " AND (receiver=" . sqlesc($CURUSER['id']) . " OR sender=" . sqlesc($CURUSER['id']) .") LIMIT 1") or sqlerr(__FILE__,__LINE__);
-		$origmsgrow = mysqli_fetch_assoc($res);
+		$origmsgrow = mysql_fetch_assoc($res);
 		if (!$origmsgrow)
 			stderr($lang_takemessage['std_error'], $lang_takemessage['std_no_permission_forwarding']);
 		if(!$_POST['to'])
@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] != "POST")
 	// End of Change
 
 	$res = sql_query("SELECT id,username,parked,email,acceptpms, notifs, UNIX_TIMESTAMP(last_access) as la FROM users WHERE id=".sqlesc($receiver)) or sqlerr(__FILE__, __LINE__);
-	$user = mysqli_fetch_assoc($res);
+	$user = mysql_fetch_assoc($res);
 	if (!$user)
 		stderr($lang_takemessage['std_error'], $lang_takemessage['std_user_not_exist']);
 
@@ -72,13 +72,13 @@ if ($_SERVER["REQUEST_METHOD"] != "POST")
 		if ($user["acceptpms"] == "yes")
 		{
 			$res2 = sql_query("SELECT * FROM blocks WHERE userid=".sqlesc($receiver)." AND blockid=" . sqlesc($CURUSER["id"])) or sqlerr(__FILE__, __LINE__);
-			if (sql_num_rows($res2) == 1)
+			if (mysql_num_rows($res2) == 1)
 			stderr($lang_takemessage['std_refused'], $lang_takemessage['std_user_blocks_your_pms']);
 		}
 		elseif ($user["acceptpms"] == "friends")
 		{
 			$res2 = sql_query("SELECT * FROM friends WHERE userid=".sqlesc($receiver)." AND friendid=" . sqlesc($CURUSER["id"])) or sqlerr(__FILE__, __LINE__);
-			if (sql_num_rows($res2) != 1)
+			if (mysql_num_rows($res2) != 1)
 			stderr($lang_takemessage['std_refused'], $lang_takemessage['std_user_accepts_friends_pms']);
 		}
 		elseif ($user["acceptpms"] == "no")
@@ -142,9 +142,9 @@ EOD;
 		{
 			// Make sure receiver of $origmsg is current user
 			$res = sql_query("SELECT * FROM messages WHERE id=$origmsg") or sqlerr(__FILE__, __LINE__);
-			if (sql_num_rows($res) == 1)
+			if (mysql_num_rows($res) == 1)
 			{
-				$arr = mysqli_fetch_assoc($res);
+				$arr = mysql_fetch_assoc($res);
 				if ($arr["receiver"] != $CURUSER["id"])
 				stderr("w00t","This shouldn't happen.");
 				if ($arr["saved"] == "no")

@@ -137,24 +137,24 @@ if ($action){
 
 			$countries = "<option value=0>---- ".$lang_usercp['select_none_selected']." ----</option>\n";
 			$ct_r = sql_query("SELECT id,name FROM countries ORDER BY name") or die;
-			while ($ct_a = mysqli_fetch_array($ct_r))
+			while ($ct_a = mysql_fetch_array($ct_r))
 			$countries .= "<option value=".htmlspecialchars($ct_a[id])."" . (htmlspecialchars($CURUSER["country"]) == htmlspecialchars($ct_a['id']) ? " selected" : "") . ">".htmlspecialchars($ct_a[name])."</option>\n";
 			$isplist = "<option value=0>---- ".$lang_usercp['select_none_selected']." ----</option>\n";
 			$isp_r = sql_query("SELECT id,name FROM isp ORDER BY id ASC") or die;
-			while ($isp_a = mysqli_fetch_array($isp_r))
+			while ($isp_a = mysql_fetch_array($isp_r))
 			$isplist .= "<option value=".htmlspecialchars($isp_a[id])."" . (htmlspecialchars($CURUSER["isp"]) == htmlspecialchars($isp_a['id']) ? " selected" : "") . ">".htmlspecialchars($isp_a[name])."</option>\n";
 			$downloadspeed = "<option value=0>---- ".$lang_usercp['select_none_selected']." ----</option>\n";
 			$ds_a = sql_query("SELECT id,name FROM downloadspeed ORDER BY id") or die;
-			while ($ds_b = mysqli_fetch_array($ds_a))
+			while ($ds_b = mysql_fetch_array($ds_a))
 			$downloadspeed .= "<option value=".htmlspecialchars($ds_b[id])."" . (htmlspecialchars($CURUSER["download"]) == htmlspecialchars($ds_b['id']) ? " selected" : "") . ">".htmlspecialchars($ds_b[name])."</option>\n";
 
 			$uploadspeed = "<option value=0>---- ".$lang_usercp['select_none_selected']." ----</option>\n";
 			$us_a = sql_query("SELECT id,name FROM uploadspeed ORDER BY id") or die;
-			while ($us_b = mysqli_fetch_array($us_a))
+			while ($us_b = mysql_fetch_array($us_a))
 			$uploadspeed .= "<option value=".htmlspecialchars($us_b[id])."" . (htmlspecialchars($CURUSER["upload"]) == htmlspecialchars($us_b['id']) ? " selected" : "") . ">".htmlspecialchars($us_b[name])."</option>\n";
 			$ra=sql_query("SELECT * FROM bitbucket WHERE public = '1'");
 			$options='';
-			while ($sor=mysqli_fetch_array($ra))
+			while ($sor=mysql_fetch_array($ra))
 			{
 				$text.='<option value="'. get_protocol_prefix() . $BASEURL .'/bitbucket/'.$sor["name"].'">'.$sor["name"].'</option>';
 			}
@@ -178,7 +178,7 @@ if ($action){
 if ($showschool == 'yes'){
 $schools = "<option value=35>---- ".$lang_usercp['select_none_selected']." ----</option>n";
 $sc_r = sql_query("SELECT id,name FROM schools ORDER BY name") or die;
-while ($sc_a = mysqli_fetch_array($sc_r))
+while ($sc_a = mysql_fetch_array($sc_r))
 $schools .= "<option value=$sc_a[id]" . ($sc_a['id'] == $CURUSER['school'] ? " selected" : "") . ">$sc_a[name]</option>n";
 tr($lang_usercp['row_school'], "<select name=school>$schools</select>", 1);
 }
@@ -218,20 +218,20 @@ tr($lang_usercp['row_school'], "<select name=school>$schools</select>", 1);
 				global $_POST;
 				$return = "";
 				$r = sql_query("SELECT id FROM ".$dbtable) or sqlerr();
-				$rows = sql_num_rows($r);
+				$rows = mysql_num_rows($r);
 				for ($i = 0; $i < $rows; ++$i)
 					{
-						$a = mysqli_fetch_assoc($r);
+						$a = mysql_fetch_assoc($r);
 						if ($_POST[$cbname.$a[id]] == 'yes')
 						$return .= "[".$cbname.$a[id]."]";
 					}
 				return $return;
 				}
 				/*$r = sql_query("SELECT id FROM categories") or sqlerr();
-				$rows = sql_num_rows($r);
+				$rows = mysql_num_rows($r);
 				for ($i = 0; $i < $rows; ++$i)
 				{
-					$a = mysqli_fetch_assoc($r);
+					$a = mysql_fetch_assoc($r);
 					if ($_POST["cat$a[id]"] == 'yes')
 					$notifs .= "[cat$a[id]]";
 				}*/
@@ -536,7 +536,7 @@ if ($showaudiocodec) $audiocodecs = searchbox_item_list("audiocodecs");
 			tr_small($lang_usercp['row_browse_default_categories'],$categories,1);
 			$ss_r = sql_query("SELECT * FROM stylesheets") or die;
 			$ss_sa = array();
-			while ($ss_a = mysqli_fetch_array($ss_r))
+			while ($ss_a = mysql_fetch_array($ss_r))
 			{
 				$ss_id = $ss_a["id"];
 				$ss_name = $ss_a["name"];
@@ -550,7 +550,7 @@ if ($showaudiocodec) $audiocodecs = searchbox_item_list("audiocodecs");
 				$stylesheets .= "<option value=$ss_id$ss>$ss_name</option>\n";
 			}
 			$cires = sql_query("SELECT * FROM caticons ORDER BY name") or die;
-			while($caticon = mysqli_fetch_array($cires)){
+			while($caticon = mysql_fetch_array($cires)){
 				if ($caticon['id'] == $CURUSER['caticon']) $sl = " selected"; else $sl = "";
 				$categoryicons .= "<option value=".$caticon['id'].$sl.">".$caticon['name']."</option>\n";
 			}
@@ -664,7 +664,7 @@ tr_small($lang_usercp['row_funbox'],"<input type=checkbox name=showfb".($CURUSER
 				$passupdated = 0;
 				$privacyupdated = 0;
 				$resetpasskey = $_POST["resetpasskey"];
-				$email = sql_real_escape_string( htmlspecialchars( trim($_POST["email"]) ));
+				$email = mysql_real_escape_string( htmlspecialchars( trim($_POST["email"]) ));
 				$chpassword = $_POST["chpassword"];
 				$passagain = $_POST["passagain"];
 				$privacy = $_POST["privacy"];
@@ -727,7 +727,7 @@ tr_small($lang_usercp['row_funbox'],"<input type=checkbox name=showfb".($CURUSER
 						die;
 					}
 					$r = sql_query("SELECT id FROM users WHERE email=" . sqlesc($email)) or sqlerr();
-					if (sql_num_rows($r) > 0){
+					if (mysql_num_rows($r) > 0){
 						stderr($lang_usercp['std_error'], $lang_usercp['std_email_in_use'].goback("-2"), 0);
 						die;
 					}
@@ -768,7 +768,7 @@ EOD;
 
 				$user = $CURUSER["id"];
 				$query = sprintf("UPDATE users SET " . implode(",", $updateset) . " WHERE id ='%s'",
-				sql_real_escape_string($user));
+				mysql_real_escape_string($user));
 				$result = sql_query($query);
 				if (!$result)
 				sqlerr(__FILE__,__LINE__);
@@ -790,7 +790,7 @@ EOD;
 			if ($type == 'save') {
 				print("<form method=post action=usercp.php><input type=hidden name=action value=security><input type=hidden name=type value=confirm>");
 				$resetpasskey = $_POST["resetpasskey"];
-				$email = sql_real_escape_string( htmlspecialchars( trim($_POST["email"]) ));
+				$email = mysql_real_escape_string( htmlspecialchars( trim($_POST["email"]) ));
 				$chpassword = $_POST["chpassword"];
 				$passagain = $_POST["passagain"];
 				$privacy = $_POST["privacy"];
@@ -894,7 +894,7 @@ print("<table border=0 cellspacing=0 cellpadding=3 width=940><tr>".
 "<td class=colhead align=center width=20%>".$lang_usercp['col_last_post']."</td>".
 "</tr>");
 $res_topics = sql_query("SELECT * FROM readposts INNER JOIN topics ON topics.id = readposts.topicid WHERE readposts.userid = ".$CURUSER[id]." ORDER BY readposts.id DESC LIMIT 5") or sqlerr();
-while ($topicarr = mysqli_fetch_assoc($res_topics))
+while ($topicarr = mysql_fetch_assoc($res_topics))
 {
 	$topicid = $topicarr["id"];
 	$topic_title = $topicarr["subject"];
