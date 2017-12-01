@@ -114,7 +114,7 @@ class db {
 	}
 
 	function num_rows($query) {
-		$query = mysql_fetch_row($query);
+		$query = mysql_num_rows($query);
 		return $query;
 	}
 
