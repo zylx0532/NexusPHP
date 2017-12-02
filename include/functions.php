@@ -1055,9 +1055,14 @@ function parse_imdb_id($url)
 	}
 }
 
+function build_douban_url($douban_id)
+{
+	return ($douban_id == "" || $douban_id=="0") ? "" : "http://movie.douban.com/subject/" . $douban_id . "/";
+}
+
 function build_imdb_url($imdb_id)
 {
-	return $imdb_id == "" ? "" : "http://www.imdb.com/title/tt" . $imdb_id . "/";
+	return ($imdb_id == "" || $imdb_id=="0") ? "" : "http://www.imdb.com/title/tt" . $imdb_id . "/";
 }
 
 // it's a stub implemetation here, we need more acurate regression analysis to complete our algorithm
@@ -3175,14 +3180,18 @@ while ($row = mysql_fetch_assoc($res))
 		print($dissmall_descr == "" ? "" : "<br />".htmlspecialchars($dissmall_descr));
 	}
 	print("</td>");
-
-		$act = "";
-		if ($CURUSER["dlicon"] != 'no' && $CURUSER["downloadpos"] != "no")
+    
+    $douban_imdb="<div style=\"text-align:right;margin-right:3px;width:50px\">";
+    $douban_imdb.="<a href=\"".build_douban_url("")."\"><img src=\"/pic/icon-douban.png\" height=\"16px\" width=\"16px\"> ".($row["douban_rating"] == "" ? "NA" : $row["douban_rating"])."</a><br />";
+    $douban_imdb.="<a href=\"".build_imdb_url($row["url"])."\"><img src=\"/pic/icon-imdb.png\"  height=\"16px\" width=\"16px\"> ".($row["imdb_rating"] == "" ? "NA" : $row["imdb_rating"])."</a></div>";
+	$act = "";
+	if ($CURUSER["dlicon"] != 'no' && $CURUSER["downloadpos"] != "no")
 		$act .= "<a href=\"download.php?id=".$id."\"><img class=\"download\" src=\"pic/trans.gif\" style='padding-bottom: 2px;' alt=\"download\" title=\"".$lang_functions['title_download_torrent']."\" /></a>" ;
-		if ($CURUSER["bmicon"] == 'yes'){
-			$bookmark = " href=\"javascript: bookmark(".$id.",".$counter.");\"";
-			$act .= ($act ? "<br />" : "")."<a id=\"bookmark".$counter."\" ".$bookmark." >".get_torrent_bookmark_state($CURUSER['id'], $id)."</a>";
-		}
+	if ($CURUSER["bmicon"] == 'yes'){
+		$bookmark = " href=\"javascript: bookmark(".$id.",".$counter.");\"";
+		$act .= ($act ? "<br />" : "")."<a id=\"bookmark".$counter."\" ".$bookmark." >".get_torrent_bookmark_state($CURUSER['id'], $id)."</a>";
+	}
+	$act = "<table><tr><td class=\"embedded\">".$douban_imdb."</td><td class=\"embedded\">".$act."</td></tr></table>\n";
 
 	print("<td width=\"20\" class=\"embedded\" style=\"text-align: right; \" valign=\"middle\">".$act."</td>\n");
 
