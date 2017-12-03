@@ -229,10 +229,15 @@ else {
 						$autodata .= "<br />\n<strong><font color=\"DarkRed\">".$lang_details['text_year']."</font></strong>" . "".$movie->year ()."<br />\n";
 						$autodata .= "<strong><font color=\"DarkRed\">".$lang_details['text_runtime']."</font></strong>".$runtimes."<br />\n";
 						$autodata .= "<strong><font color=\"DarkRed\">".$lang_details['text_votes']."</font></strong>" . "".$movie->votes ()."<br />\n";
-						$autodata .= "<strong><font color=\"DarkRed\">".$lang_details['text_rating']."</font></strong>" . "".$movie->rating ()."<br />\n";
+                        
+                        $db_imdb_rating=$movie->rating ();
+                        if($db_imdb_rating !="")
+                        {
+                            $sql_tupdate = sql_query("update torrents set imdb_rating=".sqlesc($db_imdb_rating)." WHERE id = " . sqlesc($id)) or sqlerr(__FILE__, __LINE__);
+                        }
+						$autodata .= "<strong><font color=\"DarkRed\">".$lang_details['text_rating']."</font></strong>" . "".$db_imdb_rating."<br />\n";
 						$autodata .= "<strong><font color=\"DarkRed\">".$lang_details['text_language']."</font></strong>" . "".$movie->language ()."<br />\n";
 						$autodata .= "<strong><font color=\"DarkRed\">".$lang_details['text_country']."</font></strong>";
-
 						$temp = "";
 						for ($i = 0; $i < count ($country); $i++)
 						{
