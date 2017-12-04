@@ -5,3 +5,4 @@
 .sln
 .phpproj
 allconfig.php
+memcache.php
