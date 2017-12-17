@@ -233,7 +233,7 @@ else {
                         $db_imdb_rating=$movie->rating ();
                         if($db_imdb_rating !="")
                         {
-                            $sql_tupdate = sql_query("update torrents set imdb_rating=".sqlesc($db_imdb_rating)." WHERE id = " . sqlesc($id)) or sqlerr(__FILE__, __LINE__);
+                            $sql_tupdate = sql_query("CALL uspUpdateTorrent_imdb_rating(". sqlesc($id).",".sqlesc($db_imdb_rating).");") or sqlerr(__FILE__, __LINE__);
                         }
 						$autodata .= "<strong><font color=\"DarkRed\">".$lang_details['text_rating']."</font></strong>" . "".$db_imdb_rating."<br />\n";
 						$autodata .= "<strong><font color=\"DarkRed\">".$lang_details['text_language']."</font></strong>" . "".$movie->language ()."<br />\n";

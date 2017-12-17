@@ -39,7 +39,7 @@ switch ($siteid)
 			$Cache->delete_value('imdb_id_'.$thenumbers.'_median', true);
 			$Cache->delete_value('imdb_id_'.$thenumbers.'_minor', true);
             if($movie->main_rating !="")
-                $r = sql_query("update torrents set imdb_rating='".sqlesc($movie->main_rating)."' WHERE id = " . sqlesc($id)) or sqlerr(__FILE__, __LINE__);
+                $r = sql_query("CALL uspUpdateTorrent_imdb_rating(". sqlesc($id).",".sqlesc($movie->main_rating).");") or sqlerr(__FILE__, __LINE__);
 			header("Location: " . get_protocol_prefix() . "$BASEURL/details.php?id=".htmlspecialchars($id));
 		}
 		break;
