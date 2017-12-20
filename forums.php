@@ -550,6 +550,7 @@ if ($action == "viewtopic")
 	}
 	elseif(isset($page))
 	{
+		$page = 0 + $page; // Add this line to prevent the XSS attack
 		if($page < 0){
 		$page = 0;
 		}
