@@ -188,7 +188,7 @@ function check_client($peer_id, $agent, &$agent_familyid)
 		if($row_allowed_ua['peer_id_pattern'] != '')
 		{
 			if(!preg_match($row_allowed_ua['peer_id_pattern'], $row_allowed_ua['peer_id_start'], $match_bench))
-			err("regular expression err for: " . $row_allowed_ua['peer_id_start'] . ", please ask sysop to fix this");
+			err("{$row_allowed_ua['id']} peerid regular expression err for: " . $row_allowed_ua['peer_id_start'] . ", please ask sysop to fix this");
 
 			if(preg_match($row_allowed_ua['peer_id_pattern'], $peer_id, $match_target))
 			{
@@ -238,7 +238,7 @@ function check_client($peer_id, $agent, &$agent_familyid)
 		if($row_allowed_ua['agent_pattern'] != '')
 		{
 			if(!preg_match($row_allowed_ua['agent_pattern'], $row_allowed_ua['agent_start'], $match_bench))
-			err("regular expression err for: " . $row_allowed_ua['agent_start'] . ", please ask sysop to fix this");
+			err("{$row_allowed_ua['id']} agent regular expression err for: " . $row_allowed_ua['agent_start'] . ", please ask sysop to fix this");
 
 			if(preg_match($row_allowed_ua['agent_pattern'], $agent, $match_target))
 			{

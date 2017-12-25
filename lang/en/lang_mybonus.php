@@ -122,7 +122,11 @@ where<ul><li><b>A</b> is an intermediate variable</li><li><b>Ti</b> is the <b>i<
 	'bonus_amount_not_allowed_two' => "Bonus amount not allowed! You can only give away from 1000.0 to 50000.0 points every time.",
 	'bonus_ratio_not_allowed' => "Bonus ratio not allowed! Only users whose ratio below 0.8 need charity.",
 	'std_no_users_need_charity' => "No users need charity at the moment.",
-	'text_success_charity' => "Thank you! Your generosity is appreciated."
+	'text_success_charity' => "Thank you! Your generosity is appreciated.",
+	'text_exchange_hr' => 'Exempt an H&R count',
+	'text_exchange_hr_ok' => 'Your H&R count has been decreased by one.',
+	'text_exchange_hr_btn' => 'Exempt',
+	'text_exchange_hr_btn_disabled' => 'No H&R now',
 );
 
 ?>

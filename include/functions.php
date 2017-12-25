@@ -1234,12 +1234,7 @@ function allowedemails()
 
 function redirect($url)
 {
-	if(!headers_sent()){
-        header('HTTP/1.1 302 Found');
-	    header("Location : $url");
-	}
-	else
-	echo "<script type=\"text/javascript\">window.location.href = '$url';</script>";
+    printf('<script>window.location.href = %s;</script>', json_encode($url));
 	exit;
 }
 
