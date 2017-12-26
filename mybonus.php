@@ -7,7 +7,7 @@ loggedinorreturn();
 parked();
 
 function bonusarray($option){
-	global $onegbupload_bonus,$fivegbupload_bonus,$tengbupload_bonus,$oneinvite_bonus,$customtitle_bonus,$vipstatus_bonus, $basictax_bonus, $taxpercentage_bonus, $bonusnoadpoint_advertisement, $bonusnoadtime_advertisement, $price_hnr;
+	global $onegbupload_bonus,$fivegbupload_bonus,$tengbupload_bonus,$oneinvite_bonus,$customtitle_bonus,$vipstatus_bonus, $basictax_bonus, $taxpercentage_bonus, $bonusnoadpoint_advertisement, $bonusnoadtime_advertisement, $price_hnr,$hundredgbdownload_bonus, $hundredgbdownload_reduce;
 	global $lang_mybonus;
 	$bonus = array();
 	switch ($option)
@@ -88,13 +88,30 @@ function bonusarray($option){
 			$bonus['description'] = $lang_mybonus['text_charity_giving_note'];
 			break;
 			}
-		case 10:
+		case 10:{
 			$bonus['points'] = $price_hnr;
 			$bonus['art'] = 'hr';
 			$bonus['menge'] = 0;
 			$bonus['name'] = $lang_mybonus['text_exchange_hr'];
 			$bonus['description'] = '';
 			break;
+            }
+		case 11: {//100.0 GB Downloaded
+                $bonus['points'] = $hundredgbdownload_bonus;
+                $bonus['art'] = 'traffic_download';
+                $bonus['menge'] = 107374182400;
+                $bonus['name'] = $lang_mybonus['text_downloaded_one'];
+                $bonus['description'] = $lang_mybonus['text_downloaded_note'];
+                break;
+			}
+		case 12: {//100.0 GB Downloaded_reduce
+                $bonus['points'] = $hundredgbdownload_reduce;
+                $bonus['art'] = 'traffic_download_reduce';
+                $bonus['menge'] = 107374182400;
+                $bonus['name'] = $lang_mybonus['text_downloaded_reduce'];
+                $bonus['description'] = $lang_mybonus['text_downloaded_reduce_note'];
+                break;
+			}
 		default: break;
 	}
 	return $bonus;
@@ -108,7 +125,11 @@ $do = htmlspecialchars($_GET['do']);
 unset($msg);
 if (isset($do)) {
 	if ($do == "upload")
-	$msg = $lang_mybonus['text_success_upload'];
+        $msg = $lang_mybonus['text_success_upload'];
+	elseif ($do == "download")
+        $msg = $lang_mybonus['text_success_download'];
+	elseif ($do == "download_reduce")
+        $msg = $lang_mybonus['text_success_download_reduce'];
 	elseif ($do == "invite")
 	$msg = $lang_mybonus['text_success_invites'];
 	elseif ($do == "vip")
@@ -140,12 +161,20 @@ if (!$action) {
 <br /><b><?php echo $lang_mybonus['text_no_buttons_note'] ?></b></td></tr>
 <?php
 
+//refresh uploaded,downloaded
+$mybonus_refresh = sql_query("select uploaded,downloaded from users where id= $CURUSER[id]")  or sqlerr(__FILE__, __LINE__);
+$arr = mysql_fetch_array($mybonus_refresh);
+if ($arr){
+    $CURUSER['uploaded'] = $arr[uploaded];
+    $CURUSER['downloaded'] = $arr[downloaded];
+}
+
 print("<tr><td class=\"colhead\" align=\"center\">".$lang_mybonus['col_option']."</td>".
 "<td class=\"colhead\" align=\"left\">".$lang_mybonus['col_description']."</td>".
 "<td class=\"colhead\" align=\"center\">".$lang_mybonus['col_points']."</td>".
 "<td class=\"colhead\" align=\"center\">".$lang_mybonus['col_trade']."</td>".
 "</tr>");
-for ($i=1; $i <=10; $i++)
+for ($i=1; $i <=12; $i++)
 {
 	$bonusarray = bonusarray($i);
 	if (($i == 7 && $bonusgift_bonus == 'no') || ($i == 8 && ($enablead_advertisement == 'no' || $bonusnoad_advertisement == 'no')))
@@ -154,16 +183,16 @@ for ($i=1; $i <=10; $i++)
 	print("<form action=\"?action=exchange\" method=\"post\">");
 	print("<td class=\"rowhead_center\"><input type=\"hidden\" name=\"option\" value=\"".$i."\" /><b>".$i."</b></td>");
 	if ($i==5){ //for Custom Title!
-	$otheroption_title = "<input type=\"text\" name=\"title\" style=\"width: 200px\" maxlength=\"30\" />";
-	print("<td class=\"rowfollow\" align='left'><h1>".$bonusarray['name']."</h1>".$bonusarray['description']."<br /><br />".$lang_mybonus['text_enter_titile'].$otheroption_title.$lang_mybonus['text_click_exchange']."</td><td class=\"rowfollow\" align='center'>".number_format($bonusarray['points'])."</td>");
+	    $otheroption_title = "<input type=\"text\" name=\"title\" style=\"width: 200px\" maxlength=\"30\" />";
+	    print("<td class=\"rowfollow\" align='left'><h1>".$bonusarray['name']."</h1>".$bonusarray['description']."<br /><br />".$lang_mybonus['text_enter_titile'].$otheroption_title.$lang_mybonus['text_click_exchange']."</td><td class=\"rowfollow\" align='center'>".number_format($bonusarray['points'])."</td>");
 	}
 	elseif ($i==7){  //for Give A Karma Gift
-			$otheroption = "<table width=\"100%\"><tr><td class=\"embedded\"><b>".$lang_mybonus['text_username']."</b><input type=\"text\" name=\"username\" style=\"width: 200px\" maxlength=\"24\" /></td><td class=\"embedded\"><b>".$lang_mybonus['text_to_be_given']."</b><select name=\"bonusgift\" id=\"giftselect\" onchange=\"customgift();\"> <option value=\"25\"> 25</option><option value=\"50\"> 50</option><option value=\"100\"> 100</option> <option value=\"200\"> 200</option> <option value=\"300\"> 300</option> <option value=\"400\"> 400</option><option value=\"500\"> 500</option><option value=\"1000\" selected=\"selected\"> 1,000</option><option value=\"5000\"> 5,000</option><option value=\"10000\"> 10,000</option><option value=\"0\">".$lang_mybonus['text_custom']."</option></select><input type=\"text\" name=\"bonusgift\" id=\"giftcustom\" style='width: 80px' disabled=\"disabled\" />".$lang_mybonus['text_karma_points']."</td></tr><tr><td class=\"embedded\" colspan=\"2\"><b>".$lang_mybonus['text_message']."</b><input type=\"text\" name=\"message\" style=\"width: 400px\" maxlength=\"100\" /></td></tr></table>";
-			print("<td class=\"rowfollow\" align='left'><h1>".$bonusarray['name']."</h1>".$bonusarray['description']."<br /><br />".$lang_mybonus['text_enter_receiver_name']."<br />$otheroption</td><td class=\"rowfollow nowrap\" align='center'>".$lang_mybonus['text_min']."25<br />".$lang_mybonus['text_max']."10,000</td>");
+		$otheroption = "<table width=\"100%\"><tr><td class=\"embedded\"><b>".$lang_mybonus['text_username']."</b><input type=\"text\" name=\"username\" style=\"width: 200px\" maxlength=\"24\" /></td><td class=\"embedded\"><b>".$lang_mybonus['text_to_be_given']."</b><select name=\"bonusgift\" id=\"giftselect\" onchange=\"customgift();\"> <option value=\"25\"> 25</option><option value=\"50\"> 50</option><option value=\"100\"> 100</option> <option value=\"200\"> 200</option> <option value=\"300\"> 300</option> <option value=\"400\"> 400</option><option value=\"500\"> 500</option><option value=\"1000\" selected=\"selected\"> 1,000</option><option value=\"5000\"> 5,000</option><option value=\"10000\"> 10,000</option><option value=\"0\">".$lang_mybonus['text_custom']."</option></select><input type=\"text\" name=\"bonusgift\" id=\"giftcustom\" style='width: 80px' disabled=\"disabled\" />".$lang_mybonus['text_karma_points']."</td></tr><tr><td class=\"embedded\" colspan=\"2\"><b>".$lang_mybonus['text_message']."</b><input type=\"text\" name=\"message\" style=\"width: 400px\" maxlength=\"100\" /></td></tr></table>";
+		print("<td class=\"rowfollow\" align='left'><h1>".$bonusarray['name']."</h1>".$bonusarray['description']."<br /><br />".$lang_mybonus['text_enter_receiver_name']."<br />$otheroption</td><td class=\"rowfollow nowrap\" align='center'>".$lang_mybonus['text_min']."25<br />".$lang_mybonus['text_max']."10,000</td>");
 	}
 	elseif ($i==9){  //charity giving
-			$otheroption = "<table width=\"100%\"><tr><td class=\"embedded\">".$lang_mybonus['text_ratio_below']."<select name=\"ratiocharity\"> <option value=\"0.1\"> 0.1</option><option value=\"0.2\"> 0.2</option><option value=\"0.3\" selected=\"selected\"> 0.3</option> <option value=\"0.4\"> 0.4</option> <option value=\"0.5\"> 0.5</option> <option value=\"0.6\"> 0.6</option><option value=\"0.7\"> 0.7</option><option value=\"0.8\"> 0.8</option></select>".$lang_mybonus['text_and_downloaded_above']." 10 GB</td><td class=\"embedded\"><b>".$lang_mybonus['text_to_be_given']."</b><select name=\"bonuscharity\" id=\"charityselect\" > <option value=\"1000\"> 1,000</option><option value=\"2000\"> 2,000</option><option value=\"3000\" selected=\"selected\"> 3000</option> <option value=\"5000\"> 5,000</option> <option value=\"8000\"> 8,000</option> <option value=\"10000\"> 10,000</option><option value=\"20000\"> 20,000</option><option value=\"50000\"> 50,000</option></select>".$lang_mybonus['text_karma_points']."</td></tr></table>";                                                                
-			print("<td class=\"rowfollow\" align='left'><h1>".$bonusarray['name']."</h1>".$bonusarray['description']."<br /><br />".$lang_mybonus['text_select_receiver_ratio']."<br />$otheroption</td><td class=\"rowfollow nowrap\" align='center'>".$lang_mybonus['text_min']."1,000<br />".$lang_mybonus['text_max']."50,000</td>");
+		$otheroption = "<table width=\"100%\"><tr><td class=\"embedded\">".$lang_mybonus['text_ratio_below']."<select name=\"ratiocharity\"> <option value=\"0.1\"> 0.1</option><option value=\"0.2\"> 0.2</option><option value=\"0.3\" selected=\"selected\"> 0.3</option> <option value=\"0.4\"> 0.4</option> <option value=\"0.5\"> 0.5</option> <option value=\"0.6\"> 0.6</option><option value=\"0.7\"> 0.7</option><option value=\"0.8\"> 0.8</option></select>".$lang_mybonus['text_and_downloaded_above']." 10 GB</td><td class=\"embedded\"><b>".$lang_mybonus['text_to_be_given']."</b><select name=\"bonuscharity\" id=\"charityselect\" > <option value=\"1000\"> 1,000</option><option value=\"2000\"> 2,000</option><option value=\"3000\" selected=\"selected\"> 3000</option> <option value=\"5000\"> 5,000</option> <option value=\"8000\"> 8,000</option> <option value=\"10000\"> 10,000</option><option value=\"20000\"> 20,000</option><option value=\"50000\"> 50,000</option></select>".$lang_mybonus['text_karma_points']."</td></tr></table>";                                                                
+		print("<td class=\"rowfollow\" align='left'><h1>".$bonusarray['name']."</h1>".$bonusarray['description']."<br /><br />".$lang_mybonus['text_select_receiver_ratio']."<br />$otheroption</td><td class=\"rowfollow nowrap\" align='center'>".$lang_mybonus['text_min']."1,000<br />".$lang_mybonus['text_max']."50,000</td>");
 	}
 	else{  //for VIP or Upload
 		print("<td class=\"rowfollow\" align='left'><h1>".$bonusarray['name']."</h1>".$bonusarray['description']."</td><td class=\"rowfollow\" align='center'>".number_format($bonusarray['points'])."</td>");
@@ -215,7 +244,10 @@ for ($i=1; $i <=10; $i++)
 				else $ratio = 0;
 			}
 			else $ratio = $ratiolimit_bonus + 1; //Ratio always above limit
-			if ($ratiolimit_bonus > 0 && $ratio > $ratiolimit_bonus){
+			if ($i==12 && $CURUSER['downloaded'] <107374182400){
+				print("<td class=\"rowfollow\" align=\"center\"><input type=\"submit\" name=\"submit\" value=\"".$lang_mybonus['text_downloaded_too_low']."\" disabled=\"disabled\" /></td>");
+			}
+			elseif ($ratiolimit_bonus > 0 && $ratio > $ratiolimit_bonus){
 				print("<td class=\"rowfollow\" align=\"center\"><input type=\"submit\" name=\"submit\" value=\"".$lang_mybonus['text_ratio_too_high']."\" disabled=\"disabled\" /></td>");
 			}
 			else print("<td class=\"rowfollow\" align=\"center\"><input type=\"submit\" name=\"submit\" value=\"".$lang_mybonus['submit_exchange']."\" /></td>");
@@ -336,16 +368,47 @@ if ($action == "exchange") {
 		//=== trade for upload
 		if($art == "traffic") {
 			if ($CURUSER['uploaded'] > $dlamountlimit_bonus * 1073741824)//uploaded amount reach limit
-			$ratio = $CURUSER['uploaded']/$CURUSER['downloaded'];
+                $ratio = $CURUSER['uploaded']/$CURUSER['downloaded'];
 			else $ratio = 0;
 			if ($ratiolimit_bonus > 0 && $ratio > $ratiolimit_bonus)
 				die($lang_mybonus['text_cheat_alert']);
 			else {
-			$upload = $CURUSER['uploaded'];
-			$up = $upload + $bonusarray['menge'];
-			$bonuscomment = date("Y-m-d") . " - " .$points. " Points for upload bonus.\n " .$bonuscomment;
-			sql_query("UPDATE users SET uploaded = ".sqlesc($up).", seedbonus = seedbonus - $points, bonuscomment = ".sqlesc($bonuscomment)." WHERE id = ".sqlesc($userid)) or sqlerr(__FILE__, __LINE__);
-			redirect("" . get_protocol_prefix() . "$BASEURL/mybonus.php?do=upload");
+                $upload = $CURUSER['uploaded'];
+                $up = $upload + $bonusarray['menge'];
+                $bonuscomment = date("Y-m-d") . " - " .$points. " Points for upload bonus.\n " .$bonuscomment;
+                sql_query("UPDATE users SET uploaded = ".sqlesc($up).", seedbonus = seedbonus - $points, bonuscomment = ".sqlesc($bonuscomment)." WHERE id = ".sqlesc($userid)) or sqlerr(__FILE__, __LINE__);
+                redirect("" . get_protocol_prefix() . "$BASEURL/mybonus.php?do=upload");
+			}
+		}
+		//=== trade for download
+		elseif($art == "traffic_download") {
+			if ($CURUSER['uploaded'] > $dlamountlimit_bonus * 1073741824)//uploaded amount reach limit
+                $ratio = $CURUSER['uploaded']/$CURUSER['downloaded'];
+			else $ratio = 0;
+			if ($ratiolimit_bonus > 0 && $ratio > $ratiolimit_bonus)
+				die($lang_mybonus['text_cheat_alert']);
+			else {
+                $up = $bonusarray['menge'];
+                $bonuscomment = date("Y-m-d") . " - " .$points. " Points for download bonus.\n " .$bonuscomment;
+                sql_query("UPDATE users SET downloaded =downloaded+ ".sqlesc($up).", seedbonus = seedbonus - $points, bonuscomment = ".sqlesc($bonuscomment)." WHERE id = ".sqlesc($userid)) or sqlerr(__FILE__, __LINE__);
+                redirect("" . get_protocol_prefix() . "$BASEURL/mybonus.php?do=download");
+			}
+		}
+		//=== trade for download
+		elseif($art == "traffic_download_reduce") {
+			if ($CURUSER['downloaded']<$bonusarray['menge']){
+				die($lang_mybonus['text_downloaded_too_low']);
+            }
+			if ($CURUSER['uploaded'] > $dlamountlimit_bonus * 1073741824)//uploaded amount reach limit
+                $ratio = $CURUSER['uploaded']/$CURUSER['downloaded'];
+			else $ratio = 0;
+            if ($ratiolimit_bonus > 0 && $ratio > $ratiolimit_bonus)
+				die($lang_mybonus['text_cheat_alert']);
+			else {
+                $up = $bonusarray['menge'];
+                $bonuscomment = date("Y-m-d") . " - " .$points. " Points for download bonus.\n " .$bonuscomment;
+                sql_query("UPDATE users SET downloaded =downloaded- ".sqlesc($up).", seedbonus = seedbonus - $points, bonuscomment = ".sqlesc($bonuscomment)." WHERE id = ".sqlesc($userid)) or sqlerr(__FILE__, __LINE__);
+                redirect("" . get_protocol_prefix() . "$BASEURL/mybonus.php?do=download_reduce");
 			}
 		}
 		//=== trade for one month VIP status ***note "SET class = '10'" change "10" to whatever your VIP class number is
