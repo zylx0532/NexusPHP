@@ -78,6 +78,7 @@ $lang_mybonus = array
 	'text_uploaded_note' => "With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.",
 	'text_uploaded_two' => "5.0 GB Uploaded",
 	'text_uploaded_three' => "10.0 GB Uploaded",
+	'text_uploaded_four' => "100.0 GB Uploaded",
 	'text_downloaded_one' => "add 100.0 GB Doloaded",
 	'text_downloaded_reduce' => "reduce 100.0 GB Doloaded",
 	'text_downloaded_note' => "With enough bonus points acquired, you are able to exchange them for an Download Credit. The points are then removed from your Bonus Bank and the credit is added to your total downloaded amount.",

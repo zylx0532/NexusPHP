@@ -7,7 +7,7 @@ loggedinorreturn();
 parked();
 
 function bonusarray($option){
-	global $onegbupload_bonus,$fivegbupload_bonus,$tengbupload_bonus,$oneinvite_bonus,$customtitle_bonus,$vipstatus_bonus, $basictax_bonus, $taxpercentage_bonus, $bonusnoadpoint_advertisement, $bonusnoadtime_advertisement, $price_hnr,$hundredgbdownload_bonus, $hundredgbdownload_reduce;
+	global $onegbupload_bonus,$fivegbupload_bonus,$tengbupload_bonus,$hundredgbupload_bonus,$oneinvite_bonus,$customtitle_bonus,$vipstatus_bonus, $basictax_bonus, $taxpercentage_bonus, $bonusnoadpoint_advertisement, $bonusnoadtime_advertisement, $price_hnr,$hundredgbdownload_bonus, $hundredgbdownload_reduce;
 	global $lang_mybonus;
 	$bonus = array();
 	switch ($option)
@@ -96,7 +96,15 @@ function bonusarray($option){
 			$bonus['description'] = '';
 			break;
             }
-		case 11: {//100.0 GB Downloaded
+		case 11: {//100.0 GB Uploaded
+                $bonus['points'] = $hundredgbupload_bonus;
+                $bonus['art'] = 'traffic';
+                $bonus['menge'] = 107374182400;
+                $bonus['name'] = $lang_mybonus['text_uploaded_four'];
+                $bonus['description'] = $lang_mybonus['text_uploaded_note'];
+                break;
+			}
+		case 12: {//100.0 GB Downloaded
                 $bonus['points'] = $hundredgbdownload_bonus;
                 $bonus['art'] = 'traffic_download';
                 $bonus['menge'] = 107374182400;
@@ -104,7 +112,7 @@ function bonusarray($option){
                 $bonus['description'] = $lang_mybonus['text_downloaded_note'];
                 break;
 			}
-		case 12: {//100.0 GB Downloaded_reduce
+		case 13: {//100.0 GB Downloaded_reduce
                 $bonus['points'] = $hundredgbdownload_reduce;
                 $bonus['art'] = 'traffic_download_reduce';
                 $bonus['menge'] = 107374182400;
@@ -174,7 +182,7 @@ print("<tr><td class=\"colhead\" align=\"center\">".$lang_mybonus['col_option'].
 "<td class=\"colhead\" align=\"center\">".$lang_mybonus['col_points']."</td>".
 "<td class=\"colhead\" align=\"center\">".$lang_mybonus['col_trade']."</td>".
 "</tr>");
-for ($i=1; $i <=12; $i++)
+for ($i=1; $i <=13; $i++)
 {
 	$bonusarray = bonusarray($i);
 	if (($i == 7 && $bonusgift_bonus == 'no') || ($i == 8 && ($enablead_advertisement == 'no' || $bonusnoad_advertisement == 'no')))
@@ -244,7 +252,7 @@ for ($i=1; $i <=12; $i++)
 				else $ratio = 0;
 			}
 			else $ratio = $ratiolimit_bonus + 1; //Ratio always above limit
-			if ($i==12 && $CURUSER['downloaded'] <107374182400){
+			if ($i==13 && $CURUSER['downloaded'] <107374182400){
 				print("<td class=\"rowfollow\" align=\"center\"><input type=\"submit\" name=\"submit\" value=\"".$lang_mybonus['text_downloaded_too_low']."\" disabled=\"disabled\" /></td>");
 			}
 			elseif ($ratiolimit_bonus > 0 && $ratio > $ratiolimit_bonus){

@@ -78,6 +78,7 @@ $lang_mybonus = array
 	'text_uploaded_note' => "如果有足够的魔力值，你可以用它来换取上传量。交易完成后，你的魔力值会减少，上传量则会增加。",
 	'text_uploaded_two' => "5.0 GB上传量",
 	'text_uploaded_three' => "10.0 GB上传量",
+	'text_uploaded_four' => "100.0 GB上传量",
 	'text_downloaded_one' => "增加100.0 GB下载量",
 	'text_downloaded_reduce' => "减少100.0 GB下载量",
 	'text_downloaded_note' => "如果有足够的魔力值，你可以用它来换取下载量。交易完成后，你的魔力值会减少，下载量则会增加。",

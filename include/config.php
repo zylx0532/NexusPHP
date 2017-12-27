@@ -293,6 +293,7 @@ $funboxreward_bonus = $BONUS['funboxreward'];
 $onegbupload_bonus = $BONUS['onegbupload'];
 $fivegbupload_bonus = $BONUS['fivegbupload'];
 $tengbupload_bonus = $BONUS['tengbupload'];
+$hundredgbupload_bonus = $BONUS['hundredgbupload'];
 $hundredgbdownload_bonus = $BONUS['hundredgbdownload'];
 $hundredgbdownload_reduce = $BONUS['hundredgbdownload_reduce'];
 $ratiolimit_bonus = $BONUS['ratiolimit'];
