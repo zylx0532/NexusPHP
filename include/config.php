@@ -406,6 +406,12 @@ $download_exam = isset($EXAM['download']) ? (int) $EXAM['download'] : 30;
 $bonus_exam = isset($EXAM['bonus']) ? (int) $EXAM['bonus'] : 3000;
 $sltr_exam = isset($EXAM['sltr']) ? (float) $EXAM['sltr'] : 5;
 
+$global_deadline_exam = isset($EXAM['global_deadline']) ? (int) $EXAM['global_deadline'] : 0;
+$global_upload_exam = isset($EXAM['global_upload']) ? (int) $EXAM['global_upload'] : 0;
+$global_download_exam = isset($EXAM['global_download']) ? (int) $EXAM['global_download'] : 0;
+$global_bonus_exam = isset($EXAM['global_bonus']) ? (int) $EXAM['global_bonus'] : 0;
+$global_sltr_exam = isset($EXAM['global_sltr']) ? (float) $EXAM['global_sltr'] : 0;
+
 foreach ($CONFIGURATIONS as $CONFIGURATION) {
 	unset($GLOBALS[$CONFIGURATION]);
 }

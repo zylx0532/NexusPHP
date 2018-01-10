@@ -87,7 +87,7 @@ elseif ($action == 'savesettings_code') 	// save database
 elseif ($action == 'savesettings_bonus') 	// save bonus
 {
 	stdhead($lang_settings['head_save_bonus_settings']);
-	$validConfig = array('donortimes','perseeding','maxseeding','tzero','nzero','bzero','l', 'uploadtorrent','uploadsubtitle','starttopic','makepost','addcomment','pollvote','offervote', 'funboxvote','saythanks','receivethanks','funboxreward','onegbupload','fivegbupload','tengbupload','hundredgbupload','hundredgbdownload','hundredgbdownload_reduce', 'ratiolimit','dlamountlimit','oneinvite','customtitle','vipstatus','bonusgift', 'basictax', 'taxpercentage', 'prolinkpoint', 'prolinktime', 'attendance_initial', 'attendance_step', 'attendance_max');
+	$validConfig = array('donortimes','perseeding','maxseeding','tzero','nzero','bzero','l', 'uploadtorrent','uploadsubtitle','starttopic','makepost','addcomment','pollvote','offervote', 'funboxvote','saythanks','receivethanks','funboxreward','onegbupload','fivegbupload','tengbupload','hundredgbupload','hundredgbdownload','hundredgbdownload_reduce','ratiolimit','dlamountlimit','oneinvite','customtitle','vipstatus','bonusgift', 'basictax', 'taxpercentage', 'prolinkpoint', 'prolinktime', 'attendance_initial', 'attendance_step', 'attendance_max');
 	GetVar($validConfig);
 	unset($BONUS);
 	foreach($validConfig as $config) {
@@ -234,13 +234,14 @@ elseif ($action == 'savesettings_advertisement')	// save advertisement
 elseif ($action == 'savesettings_exam')	// save advertisement
 {
 	stdhead('保存考核设置');
-	$validConfig = array('enabled', 'deadline', 'upload', 'download', 'bonus', 'sltr');
+	$validConfig = array('enabled', 'deadline', 'upload', 'download', 'bonus', 'sltr', 'global_deadline', 'global_upload', 'global_download', 'global_bonus', 'global_sltr');
 	GetVar($validConfig);
 	unset($EXAM);
 	foreach($validConfig as $config) {
 		$EXAM[$config] = $$config;
 	}
 	$EXAM['enabled'] = (bool) ($enabled == 'yes');
+	$EXAM['global_deadline'] = strtotime($EXAM['global_deadline']) ?: 0;
 
 	WriteConfig('EXAM', $EXAM);
 	$actiontime = date("F j, Y, g:i a");
@@ -660,13 +661,20 @@ elseif ($action == 'mainsettings')	// main settings
 	stdhead('考核设定');
 	echo $notice;
 	echo '<form method="post" action=""><input type="hidden" name="action" value="savesettings_exam">';
-	yesorno('考核开关', 'enabled', $enabled_exam ? 'yes' : 'no', '关闭考核后，所有考核将被暂停执行。');
+    echo '<tr><td colspan="2" align="center"><b>新人考核</b></td></tr>';
+	yesorno('考核开关', 'enabled', $enabled_exam ? 'yes' : 'no', '关闭考核后，新人考核将被暂停执行。');
 	tr('考核期限', sprintf('<input type="number" style="width: 60px" min="1" name="deadline" value="%u" /> 天', $deadline_exam), true);
 	tr('上传要求', sprintf('<input type="number" style="width: 60px" min="0" name="upload" value="%u" /> GB (设为0不要求)', $upload_exam), true);
 	tr('下载要求', sprintf('<input type="number" style="width: 60px" min="0" name="download" value="%u" /> GB (设为0不要求)', $download_exam), true);
 	tr('魔力要求', sprintf('<input type="number" style="width: 80px" min="0" name="bonus" value="%u" /> (设为0不要求)', $bonus_exam), true);
 	tr('做种率(SLTR)要求', sprintf('<input type="number" style="width: 60px" min="0" step="0.5" name="sltr" value="%.1f" /> (设为0不要求)', $sltr_exam), true);
-	tr($lang_settings['row_save_settings'],"<input type='submit' name='save' value='".$lang_settings['submit_save_settings']."'>", 1);
+	echo '<tr><td colspan="2" align="center"><b>全体考核</b> <a class="faqlink" href="examine.php">[查看]</a> </td></tr>';
+    tr('考核期限', sprintf('<input type="datetime-local" name="global_deadline" value="%s" />', $global_deadline_exam ? date('Y-m-d\TH:i:s', $global_deadline_exam) : ''), true);
+    tr('上传要求', sprintf('<input type="number" style="width: 60px" min="0" name="global_upload" value="%u" /> GB (设为0不要求)', $global_upload_exam), true);
+    tr('下载要求', sprintf('<input type="number" style="width: 60px" min="0" name="global_download" value="%u" /> GB (设为0不要求)', $global_download_exam), true);
+    tr('魔力要求', sprintf('<input type="number" style="width: 80px" min="0" name="global_bonus" value="%u" /> (设为0不要求)', $global_bonus_exam), true);
+    tr('做种率(SLTR)要求', sprintf('<input type="number" style="width: 60px" min="0" step="0.5" name="global_sltr" value="%.1f" /> (设为0不要求)', $global_sltr_exam), true);
+    tr($lang_settings['row_save_settings'],"<input type='submit' name='save' value='".$lang_settings['submit_save_settings']."'>", 1);
 	echo '</form>';
 }
 elseif ($action == 'showmenu')	// settings main page
@@ -681,7 +689,7 @@ elseif ($action == 'showmenu')	// settings main page
 	tr($lang_settings['row_tweak_settings'],"<form method='post' action='".$_SERVER["SCRIPT_NAME"]."'><input type='hidden' name='action' value='tweaksettings'><input type='submit' value=\"".$lang_settings['submit_tweak_settings']."\"> ".$lang_settings['text_tweak_settings_note']."</form>", 1);
 	tr($lang_settings['row_bonus_settings'], "<form method='post' action='".$_SERVER["SCRIPT_NAME"]."'><input type='hidden' name='action' value='bonussettings'><input type='submit' value=\"".$lang_settings['submit_bonus_settings']."\"> ".$lang_settings['text_bonus_settings_note']."</form>", 1);
 	tr($lang_settings['row_account_settings'], "<form method='post' action='".$_SERVER["SCRIPT_NAME"]."'><input type='hidden' name='action' value='accountsettings'><input type='submit' value=\"".$lang_settings['submit_account_settings']."\"> ".$lang_settings['text_account_settings_settings']."</form>", 1);
-	tr('考核设定', '<form method="post" action=""><input type="hidden" name="action" value="examsettings"><input type="submit" value="考核设定"> 配置新人考核参数。</form>', 1);
+	tr('考核设定', '<form method="post" action=""><input type="hidden" name="action" value="examsettings"><input type="submit" value="考核设定"> 配置考核参数。</form>', 1);
 	tr($lang_settings['row_torrents_settings'], "<form method='post' action='".$_SERVER["SCRIPT_NAME"]."'><input type='hidden' name='action' value='torrentsettings'><input type='submit' value=\"".$lang_settings['submit_torrents_settings']."\"> ".$lang_settings['text_torrents_settings_note']."</form>", 1);
 	tr($lang_settings['row_attachment_settings'], "<form method='post' action='".$_SERVER["SCRIPT_NAME"]."'><input type='hidden' name='action' value='attachmentsettings'><input type='submit' value=\"".$lang_settings['submit_attachment_settings']."\"> ".$lang_settings['text_attachment_settings_note']."</form>", 1);
 	tr($lang_settings['row_advertisement_settings'], "<form method='post' action='".$_SERVER["SCRIPT_NAME"]."'><input type='hidden' name='action' value='advertisementsettings'><input type='submit' value=\"".$lang_settings['submit_advertisement_settings']."\"> ".$lang_settings['text_advertisement_settings_note']."</form>", 1);

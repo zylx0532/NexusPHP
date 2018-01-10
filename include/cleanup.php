@@ -397,9 +397,82 @@ function torrent_promotion_expire($days, $type = 2, $targettype = 1){
 				write_log("{$row['username']}({$row['id']}) 因考核不成功而被禁用，详细 $reason",'mod');
 			}
 		}
-	}
-	if ($printProgress) {
-		printProgress("examination cleanup");
+        if ($printProgress) {
+            printProgress("newbie examination cleanup");
+        }
+		global $global_upload_exam, $global_download_exam, $global_bonus_exam, $global_sltr_exam, $global_deadline_exam;
+		if($global_deadline_exam > 0 && $global_deadline_exam < TIMENOW){
+            $r = sql_query("SELECT `id`, `username`, `uploaded` - `exam_uploaded` AS `uploaded`, `downloaded` - `exam_downloaded` AS downloaded, `seedtime` - `exam_seedtime` AS seedtime, `leechtime` - `exam_leechtime` AS leechtime, `seedbonus` - `exam_seedbonus` AS seedbonus FROM `users` WHERE `exam_active` = 1") or sqlerr(__FILE__,__LINE__);
+            while($row = mysql_fetch_assoc($r)){
+                $pass = true;
+                $reason = "\n";
+                $uid = $row['id'];
+                $uploaded = $row['uploaded'] / 1073741824;
+                $downloaded = $row['downloaded'] / 1073741824;
+                $seedbonus = $row['seedbonus'];
+                if($global_upload_exam){
+                    if($uploaded < $global_upload_exam){
+                        $pass = false;
+                        $reason .= '上传不足: '.round($uploaded,3)." GB (要求 {$global_upload_exam}GB)\n";
+                    }
+                    $upload_result = sprintf("Upload %.2f/%.2f GB;", $uploaded, $global_upload_exam);
+                }else{
+                    $upload_result = '';
+                }
+                if($global_download_exam){
+                    if($downloaded < $global_download_exam){
+                        $pass = false;
+                        $reason .= '下载不足: '.round($downloaded,3)." GB (要求 {$global_download_exam}GB)\n";
+                    }
+                    $download_result = sprintf("Download %.2f/%.2f GB;", $downloaded, $global_download_exam);
+                }else{
+                    $download_result = '';
+                }
+                if($global_sltr_exam > 0){
+                    if($row['leechtime'] > 0){
+                        $sltr = round($row['seedtime'] / $row['leechtime'],3);
+                        if($sltr < $global_sltr_exam){
+                            $pass = false;
+                            $reason .= "SLTR不足 $sltr (要求 {$global_sltr_exam})\n";
+                        }
+                    }else{
+                        if($row['seedtime'] > 0){
+                            $sltr = 'Inf.';
+                        }else{
+                            $sltr = 'N/A';
+                            $pass = false;
+                            $reason .= "SLTR不足 $sltr (要求 {$global_sltr_exam})\n";
+                        }
+                    }
+                    $sltr_result = "SLTR $sltr/{$global_sltr_exam};";
+                }else{
+                    $sltr_result = '';
+                }
+                if($global_bonus_exam > 0){
+                    if($seedbonus < $global_bonus_exam){
+                        $pass = false;
+                        $reason .= "魔力值不足: $seedbonus (要求 {$global_bonus_exam})\n";
+                    }
+                    $bonus_result = "Bonus $seedbonus/{$global_bonus_exam}";
+                }else{
+                    $bonus_result = '';
+                }
+                $result = $upload_result.$download_result.$sltr_result.$bonus_result;
+                if($pass){
+                    $comment = sqlesc(date('Y-m-d')." - 考核通过 $result.");
+                    sql_query("UPDATE `users` SET `exam_active` = 0, `modcomment` = CONCAT_WS('\n',$comment,`modcomment`) WHERE `id` = $uid") or sqlerr(__FILE__,__LINE__);
+                    $lang = get_user_lang($uid);
+                    SystemPM($uid, $lang_cleanup_target[$lang]['msg_new_user_exam_passed_subject'], $lang_cleanup_target[$lang]['msg_user_exam_passed'].$result, true);
+                }else{ // failed,ban
+                    $comment = sqlesc(date('Y-m-d')." - 考核不通過 $result");
+                    sql_query("UPDATE `users` SET `enabled` = 'no', `exam_active` = 0, `modcomment` = CONCAT_WS('\n',$comment,`modcomment`) WHERE `id` = $uid") or sqlerr(__FILE__,__LINE__);
+                    write_log("{$row['username']}({$row['id']}) 因考核不成功而被禁用，详细 $reason",'mod');
+                }
+            }
+            if ($printProgress) {
+                printProgress("regular examination cleanup");
+            }
+		}
 	}
 //Priority Class 4: cleanup every 24 hours
 	$res = sql_query("SELECT value_u FROM avps WHERE arg = 'lastcleantime4'");

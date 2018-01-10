@@ -295,6 +295,7 @@ $lang_functions = array
 	'title_add_rss_down' => 'Add to RSS',
 	'title_delrssdown_torrent' => 'Remove selected from RSS',
 	'text_exam_deadline' => 'Your newbie exam deadline is ',
+    'text_global_exam_deadline' => 'Your regular exam deadline is ',
 	'text_passed' => 'passed',
 	'text_need' => 'need',
 	'text_exam_sltr' => 'SLTR:',

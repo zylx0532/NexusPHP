@@ -295,6 +295,7 @@ $lang_functions = array
 	'title_add_rss_down' => '添加到 RSS',
 	'title_delrssdown_torrent' => '去除RSS下载',
 	'text_exam_deadline' => '离新人考核结束还有 ',
+	'text_global_exam_deadline' => '离考核结束还有 ',
 	'text_passed' => '已通过',
 	'text_need' => '还需要',
 	'text_exam_sltr' => '做种率：',

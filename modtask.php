@@ -112,6 +112,7 @@ if ($action == "confirmuser")
 		$ori_bonus = $_POST["ori_bonus"];
 		$invites = $_POST["invites"];
 		$hr = intval($_POST["hr"]);
+
 		$added = sqlesc(date("Y-m-d H:i:s"));
 		if ($arr['email'] != $email){
 			$updateset[] = "email = " . sqlesc($email);
@@ -159,6 +160,14 @@ if ($action == "confirmuser")
 			$updateset[] = "hr = " . sqlesc($hr);
 			$modcomment = date("Y-m-d") . " - HR amount changed from {$arr['hr']} to $hr by $CURUSER[username].\n". $modcomment;
 		}
+        foreach(['active', 'uploaded', 'downloaded', 'seedbonus', 'seedtime', 'leechtime'] as $item){
+		    $examKey = "exam_$item";
+            $examValue = isset($_POST[$examKey]) ? intval($_POST[$examKey]) : 0;
+            if($arr[$examKey] != $examValue){
+                $updateset[] = "$examKey = $examValue";
+                $modcomment = date("Y-m-d") . " - Exam $item changed from {$arr[$examKey]} to {$examValue} by {$CURUSER['username']}.\n$modcomment";
+            }
+        }
 	}
 	if(get_user_class() == UC_STAFFLEADER)
 	{

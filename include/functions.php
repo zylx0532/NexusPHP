@@ -2412,6 +2412,44 @@ else {
 	}
 if ($msgalert)
 {
+    if($CURUSER['exam_active'] && $enabled_exam){
+        global $global_upload_exam, $global_download_exam, $global_bonus_exam, $global_sltr_exam, $global_deadline_exam;
+        $deadline = $global_deadline_exam - TIMENOW < 86400 ? '< 1 '.$lang_functions['text_day'] : gettime(date('Y-m-d H:i:s', $global_deadline_exam),false,false,false,false,true);
+        $text = $lang_functions['text_global_exam_deadline'].$deadline.'<br />';
+        $pass_text = '<span style="color: green">'.$lang_functions['text_passed'];
+        $need_text = '<span style="color: red">'.$lang_functions['text_need'];
+        $allpass = true;
+        if($global_sltr_exam > 0){
+            $leechtime = max(0, $CURUSER['leechtime'] - $CURUSER['exam_leechtime']);
+            $seedtime = max(0, $CURUSER['seedtime'] - $CURUSER['exam_seedtime']);
+            $sltr = $leechtime > 0 ? $seedtime / $leechtime : ($seedtime > 0 ? 'INF' : 0);
+            $passed = $sltr >= $global_sltr_exam || !is_numeric($sltr);
+            $text .= $lang_functions['text_exam_sltr'].' '.($passed ? $pass_text : sprintf('%s %.3f', $need_text, $global_sltr_exam - $sltr)).'</span><br />';
+            $allpass = $passed; // If move to other line, caution!
+        }
+        if($global_upload_exam > 0){
+            $uploaded = $CURUSER['uploaded'] - $CURUSER['exam_uploaded'];
+            $passed =  $uploaded >= $global_upload_exam * 1073741824;
+            $text .= $lang_functions['text_uploaded'].' '.($passed ? $pass_text : $need_text .' '. mksize($global_upload_exam * 1073741824 - $uploaded)).'</span>'.'<br />';
+            if($allpass) $allpass = $passed;
+        }
+        if($global_download_exam > 0){
+            $downloaded = $CURUSER['downloaded'] - $CURUSER['exam_downloaded'];
+            $passed = $downloaded >= $global_download_exam * 1073741824;
+            $text .= $lang_functions['text_downloaded'].' '.($passed ? $pass_text : $need_text .' '. mksize($global_download_exam * 1073741824 - $downloaded)).'</span>'.'<br />';
+            if($allpass) $allpass = $passed;
+        }
+        if($global_bonus_exam > 0){
+            $seedbonus = $CURUSER['seedbonus'] - $CURUSER['exam_seedbonus'];
+            $passed = $seedbonus >= $global_bonus_exam;
+            $text .= $lang_functions['text_exam_bonus'].' '.($passed ? $pass_text : $need_text .' '. round($global_bonus_exam - $seedbonus, 1)).'</span>'.'<br />';
+            if($allpass) $allpass = $passed;
+        }
+        if($allpass){
+            $text .= '<br /><span style="color: red">'.$lang_functions['text_please_keep'].'</span>';
+        }
+        msgalert("userdetails.php?id={$CURUSER['id']}", $text, 'orange');
+    }
 	if($CURUSER['exam_deadline'] > 0 && $enabled_exam){
 		$deadline = $CURUSER['exam_deadline'] - TIMENOW < 86400 ? '< 1 '.$lang_functions['text_day'] : gettime(date('Y-m-d H:i:s', $CURUSER['exam_deadline']),false,false,false,false,true);
 		$text = $lang_functions['text_exam_deadline'].$deadline.'<br />';

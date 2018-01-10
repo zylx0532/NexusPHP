@@ -460,6 +460,12 @@ if (get_user_class() >= $prfmanage_class && $user["class"] < get_user_class())
 		tr($lang_userdetails['row_seeding_karma'], "<input type=\"text\" size=\"60\" name=\"bonus\" value=\"" .htmlspecialchars($user[seedbonus]) . "\" /><input type=\"hidden\" name=\"ori_bonus\" value=\"" .htmlspecialchars($user[seedbonus]) . "\" />", 1);
 		tr($lang_userdetails['row_invites'], "<input type=\"text\" size=\"60\" name=\"invites\" value=\"" .htmlspecialchars($user[invites]) . "\" />", 1);
 		tr('H&ampR', sprintf('<input type="number" name="hr" value="%u" min="0" style="width: 3em" />', $user['hr']), true);
+		tr('考核状态', sprintf('<input type="radio" name="exam_active" value="0" id="exam-inactive"%s><label for="exam-inactive">不参与</label><input type="radio" name="exam_active" value="1" id="exam-active"%s><label for="exam-active">参与</label>', EchoChecked(!$user['exam_active']), EchoChecked($user['exam_active'])), true);
+		tr('初始上传', sprintf('<input type="number" name="exam_uploaded" value="%s">', $user['exam_uploaded']), true);
+		tr('初始下载', sprintf('<input type="number" name="exam_downloaded" value="%s">', $user['exam_downloaded']), true);
+		tr('初始魔力', sprintf('<input type="number" name="exam_seedbonus" value="%s">', htmlspecialchars($user['exam_seedbonus'])), true);
+		tr('初始做种时间', sprintf('<input type="number" name="exam_seedtime" value="%s">', htmlspecialchars($user['exam_seedtime'])), true);
+		tr('初始下载时间', sprintf('<input type="number" name="exam_leechtime" value="%s">', htmlspecialchars($user['exam_leechtime'])), true);
 	}
 	tr($lang_userdetails['row_passkey'], "<input name=\"resetkey\" value=\"yes\" type=\"checkbox\" />".$lang_userdetails['checkbox_reset_passkey'], 1);
 
