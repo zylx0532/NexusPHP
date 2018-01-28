@@ -185,14 +185,18 @@ function check_client($peer_id, $agent, &$agent_familyid)
 		$version_low_peer_id = false;
 		$version_low_agent = false;
 
-		if($row_allowed_ua['peer_id_pattern'] != '')
+		if($row_allowed_ua['peer_id_pattern'] == '')	// not need to match pattern
+            $allowed_flag_peer_id = true;
+		else
 		{
 			if(!preg_match($row_allowed_ua['peer_id_pattern'], $row_allowed_ua['peer_id_start'], $match_bench))
 			err("{$row_allowed_ua['id']} peerid regular expression err for: " . $row_allowed_ua['peer_id_start'] . ", please ask sysop to fix this");
 
 			if(preg_match($row_allowed_ua['peer_id_pattern'], $peer_id, $match_target))
 			{
-				if($row_allowed_ua['peer_id_match_num'] != 0)
+				if($row_allowed_ua['peer_id_match_num'] == 0) // no need to compare version
+				    $allowed_flag_peer_id = true;
+				else
 				{
 					for($i = 0 ; $i < $row_allowed_ua['peer_id_match_num']; $i++)
 					{
@@ -228,14 +232,12 @@ function check_client($peer_id, $agent, &$agent_familyid)
 						}
 					}
 				}
-				else // no need to compare version
-				$allowed_flag_peer_id = true;
 			}
 		}
-		else	// not need to match pattern
-		$allowed_flag_peer_id = true;
 
-		if($row_allowed_ua['agent_pattern'] != '')
+		if($row_allowed_ua['agent_pattern'] == '') // no need to compare version
+			$allowed_flag_agent = true;
+		else
 		{
 			if(!preg_match($row_allowed_ua['agent_pattern'], $row_allowed_ua['agent_start'], $match_bench))
 			err("{$row_allowed_ua['id']} agent regular expression err for: " . $row_allowed_ua['agent_start'] . ", please ask sysop to fix this");
@@ -276,12 +278,8 @@ function check_client($peer_id, $agent, &$agent_familyid)
 						}
 					}
 				}
-				else // no need to compare version
-				$allowed_flag_agent = true;
 			}
 		}
-		else
-		$allowed_flag_agent = true;
 
 		if($allowed_flag_peer_id && $allowed_flag_agent)
 		{
@@ -333,9 +331,15 @@ function check_client($peer_id, $agent, &$agent_familyid)
 	else
 	{
 		if($version_low_peer_id && $version_low_agent)
-		return $low_version;
+            return $low_version;
+        //else
+        //    return "Banned Client, Please goto $BASEURL/faq.php#id29 for a list of acceptable clients";
+		elseif($version_low_peer_id)
+            return "Banned Client with good version_low_peer_id, Please goto $BASEURL/faq.php#id29 for a list of acceptable clients";
+		elseif($version_low_agent)
+            return "Banned Client with good version_low_agent, Please goto $BASEURL/faq.php#id29 for a list of acceptable clients";
 		else
-		return "Banned Client, Please goto $BASEURL/faq.php#id29 for a list of acceptable clients";
+            return "Banned Client all, Please goto $BASEURL/faq.php#id29 for a list of acceptable clients";
 	}
 }
 

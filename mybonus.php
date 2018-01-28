@@ -556,7 +556,8 @@ if ($action == "exchange") {
 				print("<tr><td align=\"left\"></td><td align=\"left\">".$lang_mybonus['text_not_enough_karma']."<br /><br /></td></tr></table>");
 			}
 		}elseif($art == 'hr' && $CURUSER['hr'] > 0){
-			sql_query(sprintf('UPDATE users SET hr = hr - 1 WHERE id = %u AND hr > 0', $CURUSER['id'])) or sqlerr(__FILE__, __LINE__);
+            $points = 0+$bonusarray['points'];
+			sql_query(sprintf('UPDATE users SET hr = hr - 1, seedbonus = seedbonus - ' . $points . ' WHERE id = ' . $CURUSER['id'] . ' AND hr > 0')) or sqlerr(__FILE__, __LINE__);
 			redirect("mybonus.php?do=hr");
 		}
 	}
