@@ -481,3 +481,27 @@ img.sltbar
 height:10px;
 background:url(bar.gif) repeat-x 0 -116px;
 }
+/* Copied from btschool */
+.progressarea{
+	height:5px;font-size:5px;margin:3px 0px;width:315px;
+}
+.progress{
+	border:1px #808080 solid;font-size:5px;width:300px;height:5px;float:right;margin:1px;padding:0px;
+}
+.progress_downloading{
+	height:5px;font-size:5px;background-color: #FF0000;
+}
+.progress_seeding{
+	height:5px;font-size:5px;width:100%;background-color: #00FF00;
+}
+.progress_completed{
+	height:5px;font-size:5px;width:100%;background-color: #FF00FF;
+}
+
+.progress_no_downloading{
+	height:5px;font-size:5px;background-color: #C0C0C0;
+}
+
+.progress_completed_hr{
+	height:5px;font-size:5px;width:100%;background-color: #000000;
+}

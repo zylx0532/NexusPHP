@@ -3088,7 +3088,7 @@ if ($CURUSER['showcomnum'] != 'no') { ?>
 <td class="colhead"><a href="?<?php echo $oldlink?>sort=7&amp;type=<?php echo $link[7]?>"><img class="seeders" src="pic/trans.gif" alt="seeders" title="<?php echo $lang_functions['title_number_of_seeders'] ?>" /></a></td>
 <td class="colhead"><a href="?<?php echo $oldlink?>sort=8&amp;type=<?php echo $link[8]?>"><img class="leechers" src="pic/trans.gif" alt="leechers" title="<?php echo $lang_functions['title_number_of_leechers'] ?>" /></a></td>
 <td class="colhead"><a href="?<?php echo $oldlink?>sort=6&amp;type=<?php echo $link[6]?>"><img class="snatched" src="pic/trans.gif" alt="snatched" title="<?php echo $lang_functions['title_number_of_snatched']?>" /></a></td>
-<td class="colhead"><?php echo $lang_functions['row_progress'] ?></td>
+<!--<td class="colhead"><?php //echo $lang_functions['row_progress'] ?></td>-->
 <td class="colhead"><a href="?<?php echo $oldlink?>sort=9&amp;type=<?php echo $link[9]?>"><?php echo $lang_functions['col_uploader']?></a></td>
 <?php
 if (get_user_class() >= $torrentmanage_class && $variant != 'rssdown') { ?>
@@ -3123,7 +3123,8 @@ while ($row = mysql_fetch_assoc($res))
 	
 	print("<tr" . $sphighlight . ">\n");
 	
-	if($variant == 'rssdown') printf('<td class="rowfollow" valign="middle" style="padding: 0px"><input type="checkbox" name="rss[]" value="%d" onclick="BlockSelect(event.shiftKey,this)" /></td>',$row['id']);
+	if($variant == 'rssdown')
+		printf('<td class="rowfollow" valign="middle" style="padding: 0px"><input type="checkbox" name="rss[]" value="%d" onclick="BlockSelect(event.shiftKey,this)" /></td>',$row['id']);
 	
 	print("<td class=\"rowfollow nowrap\" valign=\"middle\" style='padding: 0px'>");
 	if (isset($row["category"])) {
@@ -3183,18 +3184,19 @@ while ($row = mysql_fetch_assoc($res))
 		$max_length_of_torrent_name = 60;
 	elseif ($CURUSER['fontsize'] == 'small')
 		$max_length_of_torrent_name = 80;
-	else $max_length_of_torrent_name = 70;
+	else
+		$max_length_of_torrent_name = 70;
 
 	print("<td class=\"rowfollow\" width=\"100%\" align=\"left\"><table class=\"torrentname\" width=\"100%\"><tr" . $sphighlight . "><td class=\"embedded\">".$stickyicon."<a $short_torrent_name_alt $mouseovertorrent href=\"details.php?id=".$id."&amp;hit=1\"><b>".htmlspecialchars($dispname)."</b></a>");
 	$sp_torrent = get_torrent_promotion_append($row['sp_state'],"",true,$row["added"], $row['promotion_time_type'], $row['promotion_until']).get_torrent_hitrun_icon($row);
 	$picked_torrent = "";
 	if ($CURUSER['appendpicked'] != 'no'){
-	if($row['picktype']=="hot")
-	$picked_torrent = " <b>[<font class='hot'>".$lang_functions['text_hot']."</font>]</b>";
-	elseif($row['picktype']=="classic")
-	$picked_torrent = " <b>[<font class='classic'>".$lang_functions['text_classic']."</font>]</b>";
-	elseif($row['picktype']=="recommended")
-	$picked_torrent = " <b>[<font class='recommended'>".$lang_functions['text_recommended']."</font>]</b>";
+		if ($row['picktype' ]== "hot")
+			$picked_torrent = " <b>[<font class='hot'>".$lang_functions['text_hot']."</font>]</b>";
+		elseif ($row['picktype'] == "classic")
+			$picked_torrent = " <b>[<font class='classic'>".$lang_functions['text_classic']."</font>]</b>";
+		elseif ($row['picktype'] == "recommended")
+			$picked_torrent = " <b>[<font class='recommended'>".$lang_functions['text_recommended']."</font>]</b>";
 	}
 	if ($CURUSER['appendnew'] != 'no' && strtotime($row["added"]) >= $last_browse)
 		print("<b> (<font class='new'>".$lang_functions['text_new_uppercase']."</font>)</b>");
@@ -3208,15 +3210,27 @@ while ($row = mysql_fetch_assoc($res))
 		$max_lenght_of_small_descr=$max_length_of_torrent_name; // maximum length
 		if($count_dissmall_descr > $max_lenght_of_small_descr)
 		{
-			$dissmall_descr=mb_substr($dissmall_descr, 0, $max_lenght_of_small_descr-2,"UTF-8") . "..";
+			$dissmall_descr=mb_substr($dissmall_descr, 0, $max_lenght_of_small_descr - 2, "UTF-8") . "..";
 		}
 		print($dissmall_descr == "" ? "" : "<br />".htmlspecialchars($dissmall_descr));
 	}
+
+	// PROGRESS BAR
+	if(isset($mysnatched[$row['id']])){
+		$my_progress = (1 - $mysnatched[$row['id']] / $row['size']) * 100);
+		printf('<div class="progressarea"><div class="progress"><div class="progress_downloading" style="width:%u%%;"></div></div></div>', $my_progress);
+		/*if ($progress_ == 100) {
+		}*/ //SHOW CURRENT PROGRESS TBD
+		//printf('<td>%u%%</td>', ; 
+	} /*else{
+		echo '<td>-</td>';
+	}*/
+
 	print("</td>");
-    
-    $douban_imdb="<div style=\"text-align:right;margin-right:3px;width:50px\">";
-    $douban_imdb.="<a href=\"".build_douban_url("")."\"><img src=\"/pic/icon-douban.png\" height=\"16px\" width=\"16px\"> ".($row["douban_rating"] == "" ? "NA" : $row["douban_rating"])."</a><br />";
-    $douban_imdb.="<a href=\"".build_imdb_url($row["url"])."\"><img src=\"/pic/icon-imdb.png\"  height=\"16px\" width=\"16px\"> ".($row["imdb_rating"] == "" ? "NA" : $row["imdb_rating"])."</a></div>";
+
+	$douban_imdb="<div style=\"text-align:right;margin-right:3px;width:50px\">";
+	//$douban_imdb.="<a href=\"".build_douban_url("")."\"><img src=\"/pic/icon-douban.png\" height=\"16px\" width=\"16px\"> ".($row["douban_rating"] == "" ? "NA" : $row["douban_rating"])."</a><br />";
+	$douban_imdb.="<a href=\"".build_imdb_url($row["url"])."\"><img src=\"/pic/icon-imdb.png\"  height=\"16px\" width=\"16px\"> ".($row["imdb_rating"] == "" ? "NA" : $row["imdb_rating"])."</a></div>";
 	$act = "";
 	if ($CURUSER["dlicon"] != 'no' && $CURUSER["downloadpos"] != "no")
 		$act .= "<a href=\"download.php?id=".$id."\"><img class=\"download\" src=\"pic/trans.gif\" style='padding-bottom: 2px;' alt=\"download\" title=\"".$lang_functions['title_download_torrent']."\" /></a>" ;
@@ -3288,6 +3302,7 @@ while ($row = mysql_fetch_assoc($res))
 	//size
 	print("<td class=\"rowfollow\">" . mksize_compact($row["size"])."</td>");
 
+	// COLUMN SEEDERS
 	if ($row["seeders"]) {
 			$ratio = ($row["leechers"] ? ($row["seeders"] / $row["leechers"]) : 1);
 			$ratiocolor = get_slr_color($ratio);
@@ -3297,6 +3312,7 @@ while ($row = mysql_fetch_assoc($res))
 	else
 		print("<td class=\"rowfollow\"><span class=\"" . linkcolor($row["seeders"]) . "\">" . number_format($row["seeders"]) . "</span></td>\n");
 
+	// COLUMN LEECHERS
 	if ($row["leechers"]) {
 		print("<td class=\"rowfollow\"><b><a href=\"details.php?id=".$id."&amp;hit=1&amp;dllist=1#leechers\">" .
 		number_format($row["leechers"]) . "</a></b></td>\n");
@@ -3309,12 +3325,12 @@ while ($row = mysql_fetch_assoc($res))
 	else
 	print("<td class=\"rowfollow\">" . number_format($row["times_completed"]) . "</td>\n");
 
-
-	if(isset($mysnatched[$row['id']])){ // progress
+	// REMOVE PROGRESS TO ANOTHER LOC
+	/*if(isset($mysnatched[$row['id']])){ // progress
 		printf('<td>%u%%</td>', (1 - $mysnatched[$row['id']] / $row['size']) * 100); 
 	}else{
 		echo '<td>-</td>';
-	}
+	}*/
 
 	if ($row["anonymous"] == "yes" && get_user_class() >= $torrentmanage_class)
 	{
