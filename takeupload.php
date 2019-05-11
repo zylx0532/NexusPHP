@@ -359,23 +359,67 @@ if ($altname_main == 'yes'){
 
 // some ugly code of automatically promoting torrents based on some rules
 if ($prorules_torrent == 'yes'){
-foreach ($promotionrules_torrent as $rule)
-{
-	if (!array_key_exists('catid', $rule) || in_array($catid, $rule['catid']))
-		if (!array_key_exists('sourceid', $rule) || in_array($sourceid, $rule['sourceid']))
-			if (!array_key_exists('mediumid', $rule) || in_array($mediumid, $rule['mediumid']))
-				if (!array_key_exists('codecid', $rule) || in_array($codecid, $rule['codecid']))
-					if (!array_key_exists('standardid', $rule) || in_array($standardid, $rule['standardid']))
-						if (!array_key_exists('processingid', $rule) || in_array($processingid, $rule['processingid']))
-							if (!array_key_exists('teamid', $rule) || in_array($teamid, $rule['teamid']))
-								if (!array_key_exists('audiocodecid', $rule) || in_array($audiocodecid, $rule['audiocodecid']))
-									if (!array_key_exists('pattern', $rule) || preg_match($rule['pattern'], $torrent))
-										if (is_numeric($rule['promotion'])){
-											$sp_state = $rule['promotion'];
-											break;
-										}
+	foreach ($promotionrules_torrent as $rule)
+	{
+		if (!array_key_exists('catid', $rule) || in_array($catid, $rule['catid']))
+			if (!array_key_exists('sourceid', $rule) || in_array($sourceid, $rule['sourceid']))
+				if (!array_key_exists('mediumid', $rule) || in_array($mediumid, $rule['mediumid']))
+					if (!array_key_exists('codecid', $rule) || in_array($codecid, $rule['codecid']))
+						if (!array_key_exists('standardid', $rule) || in_array($standardid, $rule['standardid']))
+							if (!array_key_exists('processingid', $rule) || in_array($processingid, $rule['processingid']))
+								if (!array_key_exists('teamid', $rule) || in_array($teamid, $rule['teamid']))
+									if (!array_key_exists('audiocodecid', $rule) || in_array($audiocodecid, $rule['audiocodecid']))
+										if (!array_key_exists('pattern', $rule) || preg_match($rule['pattern'], $torrent))
+											if (is_numeric($rule['promotion'])){
+												$sp_state = $rule['promotion'];
+												break;
+											}
+	}
 }
-}
+
+/*
+$ret = sql_query("INSERT INTO torrents (".
+	"filename, owner, visible, anonymous, name, size, numfiles, type, url, small_descr, ".
+	"descr, ori_descr, category, source, medium, codec, audiocodec, standard, processing,".
+	" team, save_as, sp_state, added, last_action, nfo, info_hash, hr) " .
+	"VALUES (".sqlesc($fname).", ".sqlesc($CURUSER["id"]).", 'yes', ".sqlesc($anonymous).", ".sqlesc($torrent).", ".
+	sqlesc($totallen).", ".count($filelist).", ".sqlesc($type).", ".sqlesc($url).", ".sqlesc($small_descr).", ".sqlesc($descr).
+	", ".sqlesc($descr).", ".sqlesc($catid).", ".sqlesc($sourceid).", ".sqlesc($mediumid).", ".sqlesc($codecid).", ".
+	sqlesc($audiocodecid).", ".sqlesc($standardid).", ".sqlesc($processingid).", ".sqlesc($teamid).", ".sqlesc($dname).", ".sqlesc($sp_state) .
+	", " . sqlesc(date("Y-m-d H:i:s")) . ", " . sqlesc(date("Y-m-d H:i:s")) . ", ".sqlesc($nfo).", " . sqlesc($infohash). ", $hr)");
+
+INSERT INTO `torrents` (`filename`, `owner`, `visible`, `anonymous`, `name`, `size`, `numfiles`, `type`, `url`, `small_descr`,
+`descr`, `ori_descr`, `category`, `source`, `medium`, `codec`, `audiocodec`, `standard`, `processing`,
+`team`, `save_as`, `sp_state`, `added`, `last_action`, `nfo`, `info_hash`, `hr`)
+VALUES 
+filename				$fname
+owner					$CURUSER["id"]
+visible					'yes'
+anonymous				$anonymous
+name					$torrent
+size					$totallen
+numfiles				count($filelist)
+type					$type
+url						$url
+small_descr				$small_descr
+descr					$descr
+ori_descr				$descr
+category				$catid
+source					$sourceid
+medium					$mediumid
+codec					$codecid
+audiocodec				$audiocodecid
+standard				$standardid
+processing				$processingid
+team					$teamid
+save_as					$dname
+sp_state				$sp_state
+added					date("Y-m-d H:i:s")
+last_action				date("Y-m-d	 H:i:s")
+nfo						$nfo
+info_hash				$infohash
+hr						$hr
+*/
 
 $ret = sql_query("INSERT INTO torrents (filename, owner, visible, anonymous, name, size, numfiles, type, url, small_descr, descr, ori_descr, category, source, medium, codec, audiocodec, standard, processing, team, save_as, sp_state, added, last_action, nfo, info_hash, hr) VALUES (".sqlesc($fname).", ".sqlesc($CURUSER["id"]).", 'yes', ".sqlesc($anonymous).", ".sqlesc($torrent).", ".sqlesc($totallen).", ".count($filelist).", ".sqlesc($type).", ".sqlesc($url).", ".sqlesc($small_descr).", ".sqlesc($descr).", ".sqlesc($descr).", ".sqlesc($catid).", ".sqlesc($sourceid).", ".sqlesc($mediumid).", ".sqlesc($codecid).", ".sqlesc($audiocodecid).", ".sqlesc($standardid).", ".sqlesc($processingid).", ".sqlesc($teamid).", ".sqlesc($dname).", ".sqlesc($sp_state) .
 ", " . sqlesc(date("Y-m-d H:i:s")) . ", " . sqlesc(date("Y-m-d H:i:s")) . ", ".sqlesc($nfo).", " . sqlesc($infohash). ", $hr)");
@@ -404,8 +448,8 @@ if ($fp)
 KPS("+",$uploadtorrent_bonus,$CURUSER["id"]);
 //===end
 
-
-write_log("Torrent $id ($torrent) was uploaded by $anon");
+// WRITE REAL USERNAME TO LOG
+write_log("Torrent $id ($torrent) was uploaded by " . $CURUSER["username"]);
 
 //===notify people who voted on offer thanks CoLdFuSiOn :)
 if ($is_offer)
