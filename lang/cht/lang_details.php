@@ -218,7 +218,7 @@ $lang_details = array
 	'row_uploader_bandwidth' => "發布者頻寬",
 	'text_and_more' => "……（這裏只顯示最新記錄。共",
 	'text_users_in_total' => "個用戶表示了感謝）",	'torrent_dl_url' => "種子連結",
-	'torrent_dl_url_notice' => "可在BT用戶端使用，請保護好Passkey，謹防洩露。",
+	'torrent_dl_url_notice' => "PassKey考慮到安全原因 已經隱藏 請右鍵複製鏈接",
 	'span_description_have_given' =>'你已經贈送魔力值',
 	'text_no_magic_added' => "暫無魔力值獎勵",
 	'magic_value_number' => "已贈送Number點魔力值",
