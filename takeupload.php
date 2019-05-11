@@ -2,10 +2,10 @@
 require_once("include/benc.php");
 require_once("include/bittorrent.php");
 
-ini_set("upload_max_filesize",$max_torrent_size);
+ini_set("upload_max_filesize", $max_torrent_size);
 dbconn();
 require_once(get_langfile_path());
-require(get_langfile_path("",true));
+require(get_langfile_path("", true));
 loggedinorreturn();
 
 function bark($msg) {
@@ -67,7 +67,7 @@ $small_descr = unesc($_POST["small_descr"]);
 
 $descr = unesc($_POST["descr"]);
 if (!$descr)
-bark($lang_takeupload['std_blank_description']);
+	bark($lang_takeupload['std_blank_description']);
 
 $catid = (0 + $_POST["type"]);
 $sourceid = (0 + $_POST["source_sel"]);
@@ -79,32 +79,32 @@ $teamid = (0 + $_POST["team_sel"]);
 $audiocodecid = (0 + $_POST["audiocodec_sel"]);
 
 if (!is_valid_id($catid))
-bark($lang_takeupload['std_category_unselected']);
+	bark($lang_takeupload['std_category_unselected']);
 if(!can_access_category($catid)) permissiondenied();
 
 if (!validfilename($fname))
-bark($lang_takeupload['std_invalid_filename']);
+	bark($lang_takeupload['std_invalid_filename']);
 if (!preg_match('/^(.+)\.torrent$/si', $fname, $matches))
-bark($lang_takeupload['std_filename_not_torrent']);
+	bark($lang_takeupload['std_filename_not_torrent']);
 $shortfname = $torrent = $matches[1];
 if (!empty($_POST["name"]))
 $torrent = unesc($_POST["name"]);
 if ($f['size'] > $max_torrent_size)
-bark($lang_takeupload['std_torrent_file_too_big'].number_format($max_torrent_size).$lang_takeupload['std_remake_torrent_note']);
+	bark($lang_takeupload['std_torrent_file_too_big'].number_format($max_torrent_size).$lang_takeupload['std_remake_torrent_note']);
 $tmpname = $f["tmp_name"];
 if (!is_uploaded_file($tmpname))
-bark("eek");
+	bark("eek");
 if (!filesize($tmpname))
-bark($lang_takeupload['std_empty_file']);
+	bark($lang_takeupload['std_empty_file']);
 
 $dict = bdec_file($tmpname, $max_torrent_size);
 if (!isset($dict))
-bark($lang_takeupload['std_not_bencoded_file']);
+	bark($lang_takeupload['std_not_bencoded_file']);
 
 function dict_check($d, $s) {
 	global $lang_takeupload;
 	if ($d["type"] != "dictionary")
-	bark($lang_takeupload['std_not_a_dictionary']);
+		bark($lang_takeupload['std_not_a_dictionary']);
 	$a = explode(":", $s);
 	$dd = $d["value"];
 	$ret = array();
@@ -245,9 +245,54 @@ else //upload to unknown section
 
 //$torrent = str_replace("_", " ", $torrent);
 
+// 1073741824 mean 1024*1024*1024
+//                   m    k   b
 if ($largesize_torrent && $totallen > ($largesize_torrent * 1073741824)) //Large Torrent Promotion
 {
+	// set $largepro_torrent to 2 means always free
 	switch($largepro_torrent)
+	{
+		case 2: //Free
+		{
+			$sp_state = 2;
+			break;
+		}
+		case 3: //2X
+		{
+			$sp_state = 3;
+			break;
+		}
+		case 4: //2X Free
+		{
+			$sp_state = 4;
+			break;
+		}
+		case 5: //Half Leech
+		{
+			$sp_state = 5;
+			break;
+		}
+		case 6: //2X Half Leech
+		{
+			$sp_state = 6;
+			break;
+		}
+		case 7: //30% Leech
+		{
+			$sp_state = 7;
+			break;
+		}
+		default: //normal
+		{
+			$sp_state = 1;
+			break;
+		}
+	}
+}
+elseif ($bigsize_torrent && $totallen > ($bigsize_torrent * 1073741824)) //big Torrent Promotion
+{
+	// set $bigpro_torrent to 5 means always half leech
+	switch($bigpro_torrent)
 	{
 		case 2: //Free
 		{
@@ -288,28 +333,28 @@ if ($largesize_torrent && $totallen > ($largesize_torrent * 1073741824)) //Large
 }
 else{ //ramdom torrent promotion
 	$sp_id = mt_rand(1,100);
-	if($sp_id <= ($probability = $randomtwoupfree_torrent)) //2X Free
+	if ($sp_id <= ($probability = $randomtwoupfree_torrent)) //2X Free
 		$sp_state = 4;
-	elseif($sp_id <= ($probability += $randomtwoup_torrent)) //2X
+	elseif ($sp_id <= ($probability += $randomtwoup_torrent)) //2X
 		$sp_state = 3;
-	elseif($sp_id <= ($probability += $randomfree_torrent)) //Free
+	elseif ($sp_id <= ($probability += $randomfree_torrent)) //Free
 		$sp_state = 2;
-	elseif($sp_id <= ($probability += $randomhalfleech_torrent)) //Half Leech
+	elseif ($sp_id <= ($probability += $randomhalfleech_torrent)) //Half Leech
 		$sp_state = 5;
-	elseif($sp_id <= ($probability += $randomtwouphalfdown_torrent)) //2X Half Leech
+	elseif ($sp_id <= ($probability += $randomtwouphalfdown_torrent)) //2X Half Leech
 		$sp_state = 6;
-	elseif($sp_id <= ($probability += $randomthirtypercentdown_torrent)) //30% Leech
+	elseif ($sp_id <= ($probability += $randomthirtypercentdown_torrent)) //30% Leech
 		$sp_state = 7;
 	else
 		$sp_state = 1; //normal
 }
 
 if ($altname_main == 'yes'){
-$cnname_part = unesc(trim($_POST["cnname"]));
-$size_part = str_replace(" ", "", mksize($totallen));
-$date_part = date("m.d.y");
-$category_part = get_single_value("categories","name","WHERE id = ".sqlesc($catid));
-$torrent = "【".$date_part."】".($_POST["name"] ? "[".$_POST["name"]."]" : "").($cnname_part ? "[".$cnname_part."]" : "");
+	$cnname_part = unesc(trim($_POST["cnname"]));
+	$size_part = str_replace(" ", "", mksize($totallen));
+	$date_part = date("m.d.y");
+	$category_part = get_single_value("categories","name","WHERE id = ".sqlesc($catid));
+	$torrent = "【".$date_part."】".($_POST["name"] ? "[".$_POST["name"]."]" : "").($cnname_part ? "[".$cnname_part."]" : "");
 }
 
 // some ugly code of automatically promoting torrents based on some rules
@@ -392,23 +437,23 @@ if ($is_offer)
 /* Email notifs */
 if ($emailnotify_smtp=='yes' && $smtptype != 'none')
 {
-$cat = get_single_value("categories","name","WHERE id=".sqlesc($catid));
-$res = sql_query("SELECT id, email, lang FROM users WHERE enabled='yes' AND parked='no' AND status='confirmed' AND notifs LIKE '%[cat$catid]%' AND notifs LIKE '%[email]%' ORDER BY lang ASC") or sqlerr(__FILE__, __LINE__);
+	$cat = get_single_value("categories","name","WHERE id=".sqlesc($catid));
+	$res = sql_query("SELECT id, email, lang FROM users WHERE enabled='yes' AND parked='no' AND status='confirmed' AND notifs LIKE '%[cat$catid]%' AND notifs LIKE '%[email]%' ORDER BY lang ASC") or sqlerr(__FILE__, __LINE__);
 
-$uploader = $anon;
+	$uploader = $anon;
 
-$size = mksize($totallen);
+	$size = mksize($totallen);
 
-$description = format_comment($descr);
+	$description = format_comment($descr);
 
-//dirty code, change later
+	//dirty code, change later
 
-$langfolder_array = array("en", "chs", "cht", "ko", "ja");
-$body_arr = array("en" => "", "chs" => "", "cht" => "", "ko" => "", "ja" => "");
-$i = 0;
-foreach($body_arr as $body)
-{
-$body_arr[$langfolder_array[$i]] = <<<EOD
+	$langfolder_array = array("en", "chs", "cht", "ko", "ja");
+	$body_arr = array("en" => "", "chs" => "", "cht" => "", "ko" => "", "ja" => "");
+	$i = 0;
+	foreach($body_arr as $body)
+	{
+	$body_arr[$langfolder_array[$i]] = <<<EOD
 {$lang_takeupload_target[$langfolder_array[$i]]['mail_hi']}
 
 {$lang_takeupload_target[$langfolder_array[$i]]['mail_new_torrent']}
@@ -430,18 +475,18 @@ http://$BASEURL/details.php?id=$id&hit=1
 {$lang_takeupload_target[$langfolder_array[$i]]['mail_team']}
 EOD;
 
-$body_arr[$langfolder_array[$i]] = str_replace("<br />","<br />",nl2br($body_arr[$langfolder_array[$i]]));
-	$i++;
+	$body_arr[$langfolder_array[$i]] = str_replace("<br />","<br />",nl2br($body_arr[$langfolder_array[$i]]));
+		$i++;
+	}
+
+	while($arr = mysql_fetch_array($res))
+	{
+			$current_lang = $arr["lang"];
+			$to = $arr["email"];
+
+			sent_mail($to,$SITENAME,$SITEEMAIL,change_email_encode(validlang($current_lang),$lang_takeupload_target[validlang($current_lang)]['mail_title'].$torrent),change_email_encode(validlang($current_lang),$body_arr[validlang($current_lang)]),"torrent upload",false,false,'',get_email_encode(validlang($current_lang)), "eYou");
+	}
 }
 
-while($arr = mysql_fetch_array($res))
-{
-		$current_lang = $arr["lang"];
-		$to = $arr["email"];
-
-		sent_mail($to,$SITENAME,$SITEEMAIL,change_email_encode(validlang($current_lang),$lang_takeupload_target[validlang($current_lang)]['mail_title'].$torrent),change_email_encode(validlang($current_lang),$body_arr[validlang($current_lang)]),"torrent upload",false,false,'',get_email_encode(validlang($current_lang)), "eYou");
-}
-}
-
-header("Location: " . get_protocol_prefix() . "$BASEURL/details.php?id=".htmlspecialchars($id)."&uploaded=1");
+	header("Location: " . get_protocol_prefix() . "$BASEURL/details.php?id=".htmlspecialchars($id)."&uploaded=1");
 ?>

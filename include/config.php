@@ -369,8 +369,15 @@ $randomtwoup_torrent = $TORRENT['randomtwoup'];
 $randomtwoupfree_torrent = $TORRENT['randomtwoupfree'];
 $randomtwouphalfdown_torrent = $TORRENT['randomtwouphalfdown'];
 $randomthirtypercentdown_torrent = $TORRENT['randomthirtypercentdown'];
+
+// large free set
 $largesize_torrent = $TORRENT['largesize'];
 $largepro_torrent = $TORRENT['largepro'];
+
+// big torrent half leech set
+$bigsize_torrent = $TORRENT['bigsize'];
+$bigpro_torrent = $TORRENT['bigpro'];
+
 $expirehalfleech_torrent = $TORRENT['expirehalfleech'];
 $expirefree_torrent = $TORRENT['expirefree'];
 $expiretwoup_torrent = $TORRENT['expiretwoup'];
