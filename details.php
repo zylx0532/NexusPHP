@@ -112,7 +112,8 @@ else {
 
 		tr($lang_details['row_action'], $download. ($owned == 1 ? "<$editlink><img class=\"dt_edit\" src=\"pic/trans.gif\" alt=\"edit\" />&nbsp;<b><font class=\"small\">".$lang_details['text_edit_torrent'] . "</font></b></a>&nbsp;|&nbsp;" : "").  (get_user_class() >= $askreseed_class && $row[seeders] == 0 ? "<a title=\"".$lang_details['title_ask_for_reseed']."\" href=\"takereseed.php?reseedid=$id\"><img class=\"dt_reseed\" src=\"pic/trans.gif\" alt=\"reseed\">&nbsp;<b><font class=\"small\">".$lang_details['text_ask_for_reseed'] ."</font></b></a>&nbsp;|&nbsp;" : "") . "<a title=\"".$lang_details['title_report_torrent']."\" href=\"report.php?torrent=$id\"><img class=\"dt_report\" src=\"pic/trans.gif\" alt=\"report\" />&nbsp;<b><font class=\"small\">".$lang_details['text_report_torrent']."</font></b></a>", 1);
 		
-		tr($lang_donate['text_donate'], sprintf('<a href="donate.php?f=details" class="faqlink">%s</a>', $lang_donate['text_text_detail_link']), true);
+		if ($lang_donate['text_donate_link'] != '')
+			tr($lang_donate['text_donate'], sprintf('<a href="donate.php?f=details" class="faqlink">%s</a>', $lang_donate['text_donate_link']), true);
 		tr(
 			$lang_details['torrent_dl_url'],
 			sprintf(
