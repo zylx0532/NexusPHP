@@ -19,7 +19,7 @@ add config/allconfig.php to ignorelist, you can get it back from https://github.
   - [ ] Show seed or leech detail in progress bar
 - [ ] Enhance offer area
   - [ ] Add lock option for offer
-  - [ ] Add subtitle to offer detail
+  - [ ] Add small description to offer detail
   - [ ] Add rules description to offer head
 - [x] Add big torrent promotion option
 - [ ] Add notice area in head
