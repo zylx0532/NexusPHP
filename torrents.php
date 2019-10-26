@@ -854,7 +854,8 @@ if ($count)
 	if(!$self_snatched_data = $Cache->get_value($self_snatched_data_cache)){
 		$res = sql_query('SELECT `torrentid`, `to_go` FROM `snatched` WHERE `userid` = '.$CURUSER['id']) or sqlerr(__FILE__,__LINE__);
 		$self_snatched_data = array();
-		while($row = mysql_fetch_row($res)) $self_snatched_data[$row[0]] = $row[1];
+		while ($row = mysql_fetch_row($res))
+			$self_snatched_data[$row[0]] = $row[1];
 		$Cache->cache_value($self_snatched_data_cache,$self_snatched_data,300);
 	}
 	if ($allsec == 1 || $enablespecial != 'yes'){
@@ -872,7 +873,8 @@ if (isset($searchstr))
 	stdhead($lang_torrents['head_search_results_for'].$searchstr_ori);
 elseif ($sectiontype == $browsecatmode)
 	stdhead($lang_torrents['head_torrents']);
-else stdhead($lang_torrents['head_music']);
+else
+	stdhead($lang_torrents['head_music']);
 print("<table width=\"940\" class=\"main\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td class=\"embedded\">");
 if ($allsec != 1 || $enablespecial != 'yes'){ //do not print searchbox if showing bookmarked torrents from all sections;
 ?>

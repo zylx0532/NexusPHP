@@ -2,10 +2,10 @@
 require_once("include/benc.php");
 require_once("include/bittorrent.php");
 
-ini_set("upload_max_filesize",$max_torrent_size);
+ini_set("upload_max_filesize", $max_torrent_size);
 dbconn();
 require_once(get_langfile_path());
-require(get_langfile_path("",true));
+require(get_langfile_path("", true));
 loggedinorreturn();
 
 function bark($msg) {
@@ -67,7 +67,7 @@ $small_descr = unesc($_POST["small_descr"]);
 
 $descr = unesc($_POST["descr"]);
 if (!$descr)
-bark($lang_takeupload['std_blank_description']);
+	bark($lang_takeupload['std_blank_description']);
 
 $catid = (0 + $_POST["type"]);
 $sourceid = (0 + $_POST["source_sel"]);
@@ -79,32 +79,32 @@ $teamid = (0 + $_POST["team_sel"]);
 $audiocodecid = (0 + $_POST["audiocodec_sel"]);
 
 if (!is_valid_id($catid))
-bark($lang_takeupload['std_category_unselected']);
+	bark($lang_takeupload['std_category_unselected']);
 if(!can_access_category($catid)) permissiondenied();
 
 if (!validfilename($fname))
-bark($lang_takeupload['std_invalid_filename']);
+	bark($lang_takeupload['std_invalid_filename']);
 if (!preg_match('/^(.+)\.torrent$/si', $fname, $matches))
-bark($lang_takeupload['std_filename_not_torrent']);
+	bark($lang_takeupload['std_filename_not_torrent']);
 $shortfname = $torrent = $matches[1];
 if (!empty($_POST["name"]))
 $torrent = unesc($_POST["name"]);
 if ($f['size'] > $max_torrent_size)
-bark($lang_takeupload['std_torrent_file_too_big'].number_format($max_torrent_size).$lang_takeupload['std_remake_torrent_note']);
+	bark($lang_takeupload['std_torrent_file_too_big'].number_format($max_torrent_size).$lang_takeupload['std_remake_torrent_note']);
 $tmpname = $f["tmp_name"];
 if (!is_uploaded_file($tmpname))
-bark("eek");
+	bark("eek");
 if (!filesize($tmpname))
-bark($lang_takeupload['std_empty_file']);
+	bark($lang_takeupload['std_empty_file']);
 
 $dict = bdec_file($tmpname, $max_torrent_size);
 if (!isset($dict))
-bark($lang_takeupload['std_not_bencoded_file']);
+	bark($lang_takeupload['std_not_bencoded_file']);
 
 function dict_check($d, $s) {
 	global $lang_takeupload;
 	if ($d["type"] != "dictionary")
-	bark($lang_takeupload['std_not_a_dictionary']);
+		bark($lang_takeupload['std_not_a_dictionary']);
 	$a = explode(":", $s);
 	$dd = $d["value"];
 	$ret = array();
@@ -245,9 +245,54 @@ else //upload to unknown section
 
 //$torrent = str_replace("_", " ", $torrent);
 
+// 1073741824 mean 1024*1024*1024
+//                   m    k   b
 if ($largesize_torrent && $totallen > ($largesize_torrent * 1073741824)) //Large Torrent Promotion
 {
+	// set $largepro_torrent to 2 means always free
 	switch($largepro_torrent)
+	{
+		case 2: //Free
+		{
+			$sp_state = 2;
+			break;
+		}
+		case 3: //2X
+		{
+			$sp_state = 3;
+			break;
+		}
+		case 4: //2X Free
+		{
+			$sp_state = 4;
+			break;
+		}
+		case 5: //Half Leech
+		{
+			$sp_state = 5;
+			break;
+		}
+		case 6: //2X Half Leech
+		{
+			$sp_state = 6;
+			break;
+		}
+		case 7: //30% Leech
+		{
+			$sp_state = 7;
+			break;
+		}
+		default: //normal
+		{
+			$sp_state = 1;
+			break;
+		}
+	}
+}
+elseif ($bigsize_torrent && $totallen > ($bigsize_torrent * 1073741824)) //big Torrent Promotion
+{
+	// set $bigpro_torrent to 5 means always half leech
+	switch($bigpro_torrent)
 	{
 		case 2: //Free
 		{
@@ -288,49 +333,93 @@ if ($largesize_torrent && $totallen > ($largesize_torrent * 1073741824)) //Large
 }
 else{ //ramdom torrent promotion
 	$sp_id = mt_rand(1,100);
-	if($sp_id <= ($probability = $randomtwoupfree_torrent)) //2X Free
+	if ($sp_id <= ($probability = $randomtwoupfree_torrent)) //2X Free
 		$sp_state = 4;
-	elseif($sp_id <= ($probability += $randomtwoup_torrent)) //2X
+	elseif ($sp_id <= ($probability += $randomtwoup_torrent)) //2X
 		$sp_state = 3;
-	elseif($sp_id <= ($probability += $randomfree_torrent)) //Free
+	elseif ($sp_id <= ($probability += $randomfree_torrent)) //Free
 		$sp_state = 2;
-	elseif($sp_id <= ($probability += $randomhalfleech_torrent)) //Half Leech
+	elseif ($sp_id <= ($probability += $randomhalfleech_torrent)) //Half Leech
 		$sp_state = 5;
-	elseif($sp_id <= ($probability += $randomtwouphalfdown_torrent)) //2X Half Leech
+	elseif ($sp_id <= ($probability += $randomtwouphalfdown_torrent)) //2X Half Leech
 		$sp_state = 6;
-	elseif($sp_id <= ($probability += $randomthirtypercentdown_torrent)) //30% Leech
+	elseif ($sp_id <= ($probability += $randomthirtypercentdown_torrent)) //30% Leech
 		$sp_state = 7;
 	else
 		$sp_state = 1; //normal
 }
 
 if ($altname_main == 'yes'){
-$cnname_part = unesc(trim($_POST["cnname"]));
-$size_part = str_replace(" ", "", mksize($totallen));
-$date_part = date("m.d.y");
-$category_part = get_single_value("categories","name","WHERE id = ".sqlesc($catid));
-$torrent = "【".$date_part."】".($_POST["name"] ? "[".$_POST["name"]."]" : "").($cnname_part ? "[".$cnname_part."]" : "");
+	$cnname_part = unesc(trim($_POST["cnname"]));
+	$size_part = str_replace(" ", "", mksize($totallen));
+	$date_part = date("m.d.y");
+	$category_part = get_single_value("categories","name","WHERE id = ".sqlesc($catid));
+	$torrent = "【".$date_part."】".($_POST["name"] ? "[".$_POST["name"]."]" : "").($cnname_part ? "[".$cnname_part."]" : "");
 }
 
 // some ugly code of automatically promoting torrents based on some rules
 if ($prorules_torrent == 'yes'){
-foreach ($promotionrules_torrent as $rule)
-{
-	if (!array_key_exists('catid', $rule) || in_array($catid, $rule['catid']))
-		if (!array_key_exists('sourceid', $rule) || in_array($sourceid, $rule['sourceid']))
-			if (!array_key_exists('mediumid', $rule) || in_array($mediumid, $rule['mediumid']))
-				if (!array_key_exists('codecid', $rule) || in_array($codecid, $rule['codecid']))
-					if (!array_key_exists('standardid', $rule) || in_array($standardid, $rule['standardid']))
-						if (!array_key_exists('processingid', $rule) || in_array($processingid, $rule['processingid']))
-							if (!array_key_exists('teamid', $rule) || in_array($teamid, $rule['teamid']))
-								if (!array_key_exists('audiocodecid', $rule) || in_array($audiocodecid, $rule['audiocodecid']))
-									if (!array_key_exists('pattern', $rule) || preg_match($rule['pattern'], $torrent))
-										if (is_numeric($rule['promotion'])){
-											$sp_state = $rule['promotion'];
-											break;
-										}
+	foreach ($promotionrules_torrent as $rule)
+	{
+		if (!array_key_exists('catid', $rule) || in_array($catid, $rule['catid']))
+			if (!array_key_exists('sourceid', $rule) || in_array($sourceid, $rule['sourceid']))
+				if (!array_key_exists('mediumid', $rule) || in_array($mediumid, $rule['mediumid']))
+					if (!array_key_exists('codecid', $rule) || in_array($codecid, $rule['codecid']))
+						if (!array_key_exists('standardid', $rule) || in_array($standardid, $rule['standardid']))
+							if (!array_key_exists('processingid', $rule) || in_array($processingid, $rule['processingid']))
+								if (!array_key_exists('teamid', $rule) || in_array($teamid, $rule['teamid']))
+									if (!array_key_exists('audiocodecid', $rule) || in_array($audiocodecid, $rule['audiocodecid']))
+										if (!array_key_exists('pattern', $rule) || preg_match($rule['pattern'], $torrent))
+											if (is_numeric($rule['promotion'])){
+												$sp_state = $rule['promotion'];
+												break;
+											}
+	}
 }
-}
+
+/*
+$ret = sql_query("INSERT INTO torrents (".
+	"filename, owner, visible, anonymous, name, size, numfiles, type, url, small_descr, ".
+	"descr, ori_descr, category, source, medium, codec, audiocodec, standard, processing,".
+	" team, save_as, sp_state, added, last_action, nfo, info_hash, hr) " .
+	"VALUES (".sqlesc($fname).", ".sqlesc($CURUSER["id"]).", 'yes', ".sqlesc($anonymous).", ".sqlesc($torrent).", ".
+	sqlesc($totallen).", ".count($filelist).", ".sqlesc($type).", ".sqlesc($url).", ".sqlesc($small_descr).", ".sqlesc($descr).
+	", ".sqlesc($descr).", ".sqlesc($catid).", ".sqlesc($sourceid).", ".sqlesc($mediumid).", ".sqlesc($codecid).", ".
+	sqlesc($audiocodecid).", ".sqlesc($standardid).", ".sqlesc($processingid).", ".sqlesc($teamid).", ".sqlesc($dname).", ".sqlesc($sp_state) .
+	", " . sqlesc(date("Y-m-d H:i:s")) . ", " . sqlesc(date("Y-m-d H:i:s")) . ", ".sqlesc($nfo).", " . sqlesc($infohash). ", $hr)");
+
+INSERT INTO `torrents` (`filename`, `owner`, `visible`, `anonymous`, `name`, `size`, `numfiles`, `type`, `url`, `small_descr`,
+`descr`, `ori_descr`, `category`, `source`, `medium`, `codec`, `audiocodec`, `standard`, `processing`,
+`team`, `save_as`, `sp_state`, `added`, `last_action`, `nfo`, `info_hash`, `hr`)
+VALUES 
+filename				$fname
+owner					$CURUSER["id"]
+visible					'yes'
+anonymous				$anonymous
+name					$torrent
+size					$totallen
+numfiles				count($filelist)
+type					$type
+url						$url
+small_descr				$small_descr
+descr					$descr
+ori_descr				$descr
+category				$catid
+source					$sourceid
+medium					$mediumid
+codec					$codecid
+audiocodec				$audiocodecid
+standard				$standardid
+processing				$processingid
+team					$teamid
+save_as					$dname
+sp_state				$sp_state
+added					date("Y-m-d H:i:s")
+last_action				date("Y-m-d	 H:i:s")
+nfo						$nfo
+info_hash				$infohash
+hr						$hr
+*/
 
 $ret = sql_query("INSERT INTO torrents (filename, owner, visible, anonymous, name, size, numfiles, type, url, small_descr, descr, ori_descr, category, source, medium, codec, audiocodec, standard, processing, team, save_as, sp_state, added, last_action, nfo, info_hash, hr) VALUES (".sqlesc($fname).", ".sqlesc($CURUSER["id"]).", 'yes', ".sqlesc($anonymous).", ".sqlesc($torrent).", ".sqlesc($totallen).", ".count($filelist).", ".sqlesc($type).", ".sqlesc($url).", ".sqlesc($small_descr).", ".sqlesc($descr).", ".sqlesc($descr).", ".sqlesc($catid).", ".sqlesc($sourceid).", ".sqlesc($mediumid).", ".sqlesc($codecid).", ".sqlesc($audiocodecid).", ".sqlesc($standardid).", ".sqlesc($processingid).", ".sqlesc($teamid).", ".sqlesc($dname).", ".sqlesc($sp_state) .
 ", " . sqlesc(date("Y-m-d H:i:s")) . ", " . sqlesc(date("Y-m-d H:i:s")) . ", ".sqlesc($nfo).", " . sqlesc($infohash). ", $hr)");
@@ -359,8 +448,8 @@ if ($fp)
 KPS("+",$uploadtorrent_bonus,$CURUSER["id"]);
 //===end
 
-
-write_log("Torrent $id ($torrent) was uploaded by $anon");
+// WRITE REAL USERNAME TO LOG
+write_log("Torrent $id ($torrent) was uploaded by " . $CURUSER["username"]);
 
 //===notify people who voted on offer thanks CoLdFuSiOn :)
 if ($is_offer)
@@ -392,23 +481,23 @@ if ($is_offer)
 /* Email notifs */
 if ($emailnotify_smtp=='yes' && $smtptype != 'none')
 {
-$cat = get_single_value("categories","name","WHERE id=".sqlesc($catid));
-$res = sql_query("SELECT id, email, lang FROM users WHERE enabled='yes' AND parked='no' AND status='confirmed' AND notifs LIKE '%[cat$catid]%' AND notifs LIKE '%[email]%' ORDER BY lang ASC") or sqlerr(__FILE__, __LINE__);
+	$cat = get_single_value("categories","name","WHERE id=".sqlesc($catid));
+	$res = sql_query("SELECT id, email, lang FROM users WHERE enabled='yes' AND parked='no' AND status='confirmed' AND notifs LIKE '%[cat$catid]%' AND notifs LIKE '%[email]%' ORDER BY lang ASC") or sqlerr(__FILE__, __LINE__);
 
-$uploader = $anon;
+	$uploader = $anon;
 
-$size = mksize($totallen);
+	$size = mksize($totallen);
 
-$description = format_comment($descr);
+	$description = format_comment($descr);
 
-//dirty code, change later
+	//dirty code, change later
 
-$langfolder_array = array("en", "chs", "cht", "ko", "ja");
-$body_arr = array("en" => "", "chs" => "", "cht" => "", "ko" => "", "ja" => "");
-$i = 0;
-foreach($body_arr as $body)
-{
-$body_arr[$langfolder_array[$i]] = <<<EOD
+	$langfolder_array = array("en", "chs", "cht", "ko", "ja");
+	$body_arr = array("en" => "", "chs" => "", "cht" => "", "ko" => "", "ja" => "");
+	$i = 0;
+	foreach($body_arr as $body)
+	{
+	$body_arr[$langfolder_array[$i]] = <<<EOD
 {$lang_takeupload_target[$langfolder_array[$i]]['mail_hi']}
 
 {$lang_takeupload_target[$langfolder_array[$i]]['mail_new_torrent']}
@@ -430,18 +519,18 @@ http://$BASEURL/details.php?id=$id&hit=1
 {$lang_takeupload_target[$langfolder_array[$i]]['mail_team']}
 EOD;
 
-$body_arr[$langfolder_array[$i]] = str_replace("<br />","<br />",nl2br($body_arr[$langfolder_array[$i]]));
-	$i++;
+	$body_arr[$langfolder_array[$i]] = str_replace("<br />","<br />",nl2br($body_arr[$langfolder_array[$i]]));
+		$i++;
+	}
+
+	while($arr = mysql_fetch_array($res))
+	{
+			$current_lang = $arr["lang"];
+			$to = $arr["email"];
+
+			sent_mail($to,$SITENAME,$SITEEMAIL,change_email_encode(validlang($current_lang),$lang_takeupload_target[validlang($current_lang)]['mail_title'].$torrent),change_email_encode(validlang($current_lang),$body_arr[validlang($current_lang)]),"torrent upload",false,false,'',get_email_encode(validlang($current_lang)), "eYou");
+	}
 }
 
-while($arr = mysql_fetch_array($res))
-{
-		$current_lang = $arr["lang"];
-		$to = $arr["email"];
-
-		sent_mail($to,$SITENAME,$SITEEMAIL,change_email_encode(validlang($current_lang),$lang_takeupload_target[validlang($current_lang)]['mail_title'].$torrent),change_email_encode(validlang($current_lang),$body_arr[validlang($current_lang)]),"torrent upload",false,false,'',get_email_encode(validlang($current_lang)), "eYou");
-}
-}
-
-header("Location: " . get_protocol_prefix() . "$BASEURL/details.php?id=".htmlspecialchars($id)."&uploaded=1");
+	header("Location: " . get_protocol_prefix() . "$BASEURL/details.php?id=".htmlspecialchars($id)."&uploaded=1");
 ?>
