@@ -51,6 +51,14 @@ if ($type=='invite')
 $inviter =  $_POST["inviter"];
 	int_check($inviter);
 $code = unesc($_POST["hash"]);
+
+//check invite code
+	$sq = sprintf("SELECT inviter FROM invites WHERE hash ='%s'",mysql_real_escape_string($code));
+	$res = sql_query($sq) or sqlerr(__FILE__, __LINE__);
+	$inv = mysql_fetch_assoc($res);
+	if (!$inv)
+		bark('invalid invite code');
+
 $ip = getip();
 
 
@@ -149,7 +157,9 @@ $res_check_user = sql_query("SELECT * FROM users WHERE username = " . $wantusern
 if(mysql_num_rows($res_check_user) == 1)
   bark($lang_takesignup['std_username_exists']);
 
-$ret = sql_query("INSERT INTO users (username, passhash, secret, editsecret, email, country, gender, status, class, invites, ".($type == 'invite' ? "invited_by," : "")." added, last_access, lang, stylesheet".($showschool == 'yes' ? ", school" : "").", uploaded) VALUES (" . $wantusername . "," . $wantpasshash . "," . $secret . "," . $editsecret . "," . $email . "," . $country . "," . $gender . ", 'pending', ".$defaultclass_class.",". $invite_count .", ".($type == 'invite' ? "'$inviter'," : "") ." '". date("Y-m-d H:i:s") ."' , " . " '". date("Y-m-d H:i:s") ."' , ".$sitelangid . ",".$defcss.($showschool == 'yes' ? ",".$school : "").",".($iniupload_main > 0 ? $iniupload_main : 0).")") or sqlerr(__FILE__, __LINE__);
+$deadline = $enabled_exam && $deadline_exam > 0 ? TIMENOW + $deadline_exam * 86400 : 0;
+
+$ret = sql_query("INSERT INTO users (username, passhash, secret, editsecret, email, country, gender, status, class, invites, ".($type == 'invite' ? "invited_by," : "")." added, last_access, lang, stylesheet".($showschool == 'yes' ? ", school" : "").", uploaded, exam_deadline) VALUES (" . $wantusername . "," . $wantpasshash . "," . $secret . "," . $editsecret . "," . $email . "," . $country . "," . $gender . ", 'pending', ".$defaultclass_class.",". $invite_count .", ".($type == 'invite' ? "'$inviter'," : "") ." '". date("Y-m-d H:i:s") ."' , " . " '". date("Y-m-d H:i:s") ."' , ".$sitelangid . ",".$defcss.($showschool == 'yes' ? ",".$school : "").",".($iniupload_main > 0 ? $iniupload_main : 0).", $deadline)") or sqlerr(__FILE__, __LINE__);
 $id = mysql_insert_id();
 $dt = sqlesc(date("Y-m-d H:i:s"));
 $subject = sqlesc($lang_takesignup['msg_subject'].$SITENAME."!");
@@ -175,6 +185,19 @@ http://$BASEURL/confirm_resend.php
 {$lang_takesignup['mail_five']}
 EOD;
 
+if ($type == 'invite')
+{
+//don't forget to delete confirmed invitee's hash code from table invites
+sql_query("DELETE FROM invites WHERE hash = '".mysql_real_escape_string($code)."'");
+$dt = sqlesc(date("Y-m-d H:i:s"));
+$subject = sqlesc($lang_takesignup_target[get_user_lang($inviter)]['msg_invited_user_has_registered']);
+$msg = sqlesc($lang_takesignup_target[get_user_lang($inviter)]['msg_user_you_invited'].$usern.$lang_takesignup_target[get_user_lang($inviter)]['msg_has_registered']);
+//sql_query("UPDATE users SET uploaded = uploaded + 10737418240 WHERE id = $inviter"); //add 10GB to invitor's uploading credit
+sql_query("INSERT INTO messages (sender, receiver, subject, added, msg) VALUES(0, $inviter, $subject, $dt, $msg)") or sqlerr(__FILE__, __LINE__);
+$Cache->delete_value('user_'.$inviter.'_unread_message_count');
+$Cache->delete_value('user_'.$inviter.'_inbox_count');
+}
+
 if ($verification == 'admin'){
 	if ($type == 'invite')
 	header("Location: " . get_protocol_prefix() . "$BASEURL/ok.php?type=inviter");
@@ -188,16 +211,5 @@ else{
 	sent_mail($send_email,$SITENAME,$SITEEMAIL,change_email_encode(get_langfolder_cookie(), $title),change_email_encode(get_langfolder_cookie(),$body),"signup",false,false,'',get_email_encode(get_langfolder_cookie()));
 	header("Location: " . get_protocol_prefix() . "$BASEURL/ok.php?type=signup&email=" . rawurlencode($send_email));
 }
-if ($type == 'invite')
-{
-//don't forget to delete confirmed invitee's hash code from table invites
-sql_query("DELETE FROM invites WHERE hash = '".mysql_real_escape_string($code)."'");
-$dt = sqlesc(date("Y-m-d H:i:s"));
-$subject = sqlesc($lang_takesignup_target[get_user_lang($inviter)]['msg_invited_user_has_registered']);
-$msg = sqlesc($lang_takesignup_target[get_user_lang($inviter)]['msg_user_you_invited'].$usern.$lang_takesignup_target[get_user_lang($inviter)]['msg_has_registered']);
-//sql_query("UPDATE users SET uploaded = uploaded + 10737418240 WHERE id = $inviter"); //add 10GB to invitor's uploading credit
-sql_query("INSERT INTO messages (sender, receiver, subject, added, msg) VALUES(0, $inviter, $subject, $dt, $msg)") or sqlerr(__FILE__, __LINE__);
-$Cache->delete_value('user_'.$inviter.'_unread_message_count');
-$Cache->delete_value('user_'.$inviter.'_inbox_count');
-}
+
 ?>

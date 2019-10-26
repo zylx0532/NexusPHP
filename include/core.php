@@ -2,13 +2,16 @@
 if(!defined('IN_TRACKER'))
   die('Hacking attempt!');
 error_reporting(E_ERROR | E_PARSE);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 include_once($rootpath . 'classes/class_cache.php'); //Require the caching class
 $Cache = NEW CACHE(); //Load the caching class
 $Cache->setLanguageFolderArray(get_langfolder_list());
 define('TIMENOW', time());
-$USERUPDATESET = array();
-$query_name=array();
+$USERUPDATESET = [];
+$query_name = [];
+
+define('SPECIAL_ZONE_FILE', 'live');
+define('COMPLAINTS_COUNT_CACHE', 'staff_new_complaints_count');
 
 define ("UC_PEASANT", 0);
 define ("UC_USER", 1);

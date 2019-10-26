@@ -3,15 +3,12 @@ require_once("include/bittorrent.php");
 dbconn();
 require_once(get_langfile_path());
 registration_check('invitesystem', true, false);
-if (get_user_class() < $sendinvite_class)
-stderr($lang_takeinvite['std_error'],$lang_takeinvite['std_invite_denied']);
-if ($CURUSER['invites'] < 1)
-	stderr($lang_takeinvite['std_error'],$lang_takeinvite['std_no_invite']);
+if (get_user_class() < $sendinvite_class) stderr($lang_takeinvite['std_error'],$lang_takeinvite['std_invite_denied']);
+$i_obj = new Invitation();
+if (!$i_obj->canInvite()) stderr($lang_takeinvite['std_error'],$lang_takeinvite['std_no_invite']);
 function bark($msg) {
-  stdhead();
-	stdmsg($lang_takeinvite['head_invitation_failed'], $msg);
-  stdfoot();
-  exit;
+	global $lang_takeinvite;
+	stderr($lang_takeinvite['head_invitation_failed'], $msg);
 }
 
 $id = $CURUSER[id];
@@ -47,6 +44,9 @@ $hash  = md5(mt_rand(1,10000).$CURUSER['username'].TIMENOW.$CURUSER['passhash'])
 
 $title = $SITENAME.$lang_takeinvite['mail_tilte'];
 
+if(!$i_obj->useInvite()) bark('Fail to use invitation.');
+sql_query("INSERT INTO invites (inviter, invitee, hash, time_invited) VALUES ('".mysql_real_escape_string($id)."', '".mysql_real_escape_string($email)."', '".mysql_real_escape_string($hash)."', " . sqlesc(date("Y-m-d H:i:s")) . ")");
+
 $message = <<<EOD
 {$lang_takeinvite['mail_one']}{$arr[username]}{$lang_takeinvite['mail_two']}
 <b><a href="javascript:void(null)" onclick="window.open('http://$BASEURL/signup.php?type=invite&invitenumber=$hash')">{$lang_takeinvite['mail_here']}</a></b><br />
@@ -59,11 +59,4 @@ EOD;
 sent_mail($email,$SITENAME,$SITEEMAIL,change_email_encode(get_langfolder_cookie(), $title),change_email_encode(get_langfolder_cookie(),$message),"invitesignup",false,false,'',get_email_encode(get_langfolder_cookie()));
 //this email is sent only when someone give out an invitation
 
-sql_query("INSERT INTO invites (inviter, invitee, hash, time_invited) VALUES ('".mysql_real_escape_string($id)."', '".mysql_real_escape_string($email)."', '".mysql_real_escape_string($hash)."', " . sqlesc(date("Y-m-d H:i:s")) . ")");
-sql_query("UPDATE users SET invites = invites - 1 WHERE id = ".mysql_real_escape_string($id)."") or sqlerr(__FILE__, __LINE__);
-
 header("Refresh: 0; url=invite.php?id=".htmlspecialchars($id)."&sent=1");
-?> 
-  
-    
-

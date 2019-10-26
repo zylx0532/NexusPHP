@@ -1,54 +1,321 @@
-img.c_movies
-{
-width:45px;
-height:46px;
-background-position: 0 0;
-}
-img.c_doc
+/* New Style */
+img.c_movies_720p
 {
 width:45px;
 height:46px;
 background-position: -45px 0;
+background-image: url(cht/catsprites.png?3) !important;
 }
-img.c_anime
+img.c_movies_1080p
 {
 width:45px;
 height:46px;
-background-position: 0 -46px;
+background-position: -45px -45px;
+background-image: url(cht/catsprites.png?3) !important;
 }
-img.c_tvseries
+img.c_movies_2160p
 {
 width:45px;
 height:46px;
-background-position: -45px -46px;
+background-position: -45px -90px;
+background-image: url(cht/catsprites.png?3) !important;
 }
-img.c_tvshows
+img.c_movies_bluray
 {
 width:45px;
 height:46px;
-background-position: 0 -92px;
+background-position: -45px -135px;
+background-image: url(cht/catsprites.png?3) !important;
 }
-img.c_mv
+img.c_movies_ipad
 {
 width:45px;
 height:46px;
-background-position: -45px -92px;
+background-position: -45px -180px;
+background-image: url(cht/catsprites.png?3) !important;
 }
-img.c_sports
+img.c_movies_remux
 {
 width:45px;
 height:46px;
-background-position: 0 -138px;
+background-position: -45px -225px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_movies_sd
+{
+width:45px;
+height:46px;
+background-position: -45px -270px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+
+img.c_doc_720p
+{
+width:45px;
+height:46px;
+background-position: 0 0;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_doc_1080p
+{
+width:45px;
+height:46px;
+background-position: 0 -45px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_doc_2160p
+{
+width:45px;
+height:46px;
+background-position: 0 -90px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_doc_bluray
+{
+width:45px;
+height:46px;
+background-position: 0 -135px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_doc_ipad
+{
+width:45px;
+height:46px;
+background-position: 0 -180px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_doc_remux
+{
+width:45px;
+height:46px;
+background-position: 0 -225px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_doc_sd
+{
+width:45px;
+height:46px;
+background-position: 0 -270px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+
+img.c_tvmusics_720p
+{
+width:45px;
+height:46px;
+background-position: -90px 0;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_tvmusics_1080i
+{
+width:45px;
+height:46px;
+background-position: -90px -45px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+
+img.c_tvshows_720p
+{
+width:45px;
+height:46px;
+background-position: -135px 0;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_tvshows_1080i
+{
+width:45px;
+height:46px;
+background-position: -135px -45px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_tvshows_1080p
+{
+width:45px;
+height:46px;
+background-position: -135px -45px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_tvshows_2160p
+{
+width:45px;
+height:46px;
+background-position: -135px -90px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_tvshows_bluray
+{
+width:45px;
+height:46px;
+background-position: -135px -135px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_tvshows_ipad
+{
+width:45px;
+height:46px;
+background-position: -135px -180px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_tvshows_remux
+{
+width:45px;
+height:46px;
+background-position: -135px -225px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_tvshows_sd
+{
+width:45px;
+height:46px;
+background-position: -135px -270;
+background-image: url(cht/catsprites.png?3) !important;
+}
+
+img.c_tvseries_720p
+{
+width:45px;
+height:46px;
+background-position: -180px 0;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_tvseries_1080i
+{
+width:45px;
+height:46px;
+background-position: -180px -45px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_tvseries_1080p
+{
+width:45px;
+height:46px;
+background-position: -180px -45px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_tvseries_2160p
+{
+width:45px;
+height:46px;
+background-position: -180px -90px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_tvseries_bluray
+{
+width:45px;
+height:46px;
+background-position: -180px -135px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_tvseries_ipad
+{
+width:45px;
+height:46px;
+background-position: -180px -180px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_tvseries_remux
+{
+width:45px;
+height:46px;
+background-position: -180px -225px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_tvseries_sd
+{
+width:45px;
+height:46px;
+background-position: -180px -270px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+
+img.c_anime_720p
+{
+width:45px;
+height:46px;
+background-position: -225px 0;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_anime_1080p
+{
+width:45px;
+height:46px;
+background-position: -225px -45px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_anime_2160p
+{
+width:45px;
+height:46px;
+background-position: -225px -90px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_anime_bluray
+{
+width:45px;
+height:46px;
+background-position: -225px -135px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_anime_ipad
+{
+width:45px;
+height:46px;
+background-position: -225px -180px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_anime_remux
+{
+width:45px;
+height:46px;
+background-position: -225px -225px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_anime_sd
+{
+width:45px;
+height:46px;
+background-position: -225px -270px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+
+img.c_sports_720p
+{
+width:45px;
+height:46px;
+background-position: -315px 0;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_sports_1080i
+{
+width:45px;
+height:46px;
+background-position: -315px -45px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+
+img.c_musics_ape
+{
+width:45px;
+height:46px;
+background-position: -360px 0;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_musics_flac
+{
+width:45px;
+height:46px;
+background-position: -360px -45px;
+background-image: url(cht/catsprites.png?3) !important;
+}
+img.c_musics_mv
+{
+width:45px;
+height:46px;
+background-image:url(cht/musicvideos.png?2) !important;
 }
 img.c_misc
 {
 width:45px;
 height:46px;
-background-position: -45px -138px;
-}
-img.c_hqaudio
-{
-width:45px;
-height:46px;
-background-position: 0 -184px;
+background-image:url(cht/misc.png?2) !important;
 }

@@ -1,13 +1,14 @@
 <?php
-require_once("include/bittorrent.php");
-dbconn(true);
-require_once(get_langfile_path("torrents.php"));
+if(!isset($sectiontype)){
+    require 'include/bittorrent.php';
+    dbconn(true);
+    $sectiontype = $browsecatmode;
+}
+require get_langfile_path("torrents.php");
 loggedinorreturn();
 parked();
-if ($showextinfo['imdb'] == 'yes')
-	require_once ("imdb/imdb.class.php");
+if ($showextinfo['imdb'] == 'yes') require_once ("imdb/imdb.class.php");
 //check searchbox
-$sectiontype = $browsecatmode;
 $showsubcat = get_searchbox_value($sectiontype, 'showsubcat');//whether show subcategory (i.e. sources, codecs) or not
 $showsource = get_searchbox_value($sectiontype, 'showsource'); //whether show sources or not
 $showmedium = get_searchbox_value($sectiontype, 'showmedium'); //whether show media or not
@@ -62,18 +63,18 @@ if ($_GET['sort'] && $_GET['type']) {
 
 	if($column == "owner")
 	{
-		$orderby = "ORDER BY pos_state DESC, torrents.anonymous, users.username " . $ascdesc;
+		$orderby = "ORDER BY pos_group DESC, torrents.anonymous, users.username " . $ascdesc;
 	}
 	else
 	{
-		$orderby = "ORDER BY pos_state DESC, torrents." . $column . " " . $ascdesc;
+		$orderby = "ORDER BY pos_group DESC, torrents." . $column . " " . $ascdesc;
 	}
 
 	$pagerlink = "sort=" . intval($_GET['sort']) . "&type=" . $linkascdesc . "&";
 
 } else {
 
-	$orderby = "ORDER BY pos_state DESC, torrents.id DESC";
+	$orderby = "ORDER BY pos_group DESC, torrents.id DESC";
 	$pagerlink = "";
 
 }
@@ -848,14 +849,22 @@ if ($count)
 	//echo $addparam;
 
 	list($pagertop, $pagerbottom, $limit) = pager($torrentsperpage, $count, "?" . $addparam);
-if ($allsec == 1 || $enablespecial != 'yes'){
-	$query = "SELECT torrents.id, torrents.sp_state, torrents.promotion_time_type, torrents.promotion_until, torrents.banned, torrents.picktype, torrents.pos_state, torrents.category, torrents.source, torrents.medium, torrents.codec, torrents.standard, torrents.processing, torrents.team, torrents.audiocodec, torrents.leechers, torrents.seeders, torrents.name, torrents.small_descr, torrents.times_completed, torrents.size, torrents.added, torrents.comments,torrents.anonymous,torrents.owner,torrents.url,torrents.cache_stamp FROM torrents ".($search_area == 3 || $column == "owner" ? "LEFT JOIN users ON torrents.owner = users.id " : "")." $where $orderby $limit";
-}
-else{
-	$query = "SELECT torrents.id, torrents.sp_state, torrents.promotion_time_type, torrents.promotion_until, torrents.banned, torrents.picktype, torrents.pos_state, torrents.category, torrents.source, torrents.medium, torrents.codec, torrents.standard, torrents.processing, torrents.team, torrents.audiocodec, torrents.leechers, torrents.seeders, torrents.name, torrents.small_descr, torrents.times_completed, torrents.size, torrents.added, torrents.comments,torrents.anonymous,torrents.owner,torrents.url,torrents.cache_stamp FROM torrents ".($search_area == 3 || $column == "owner" ? "LEFT JOIN users ON torrents.owner = users.id " : "")." LEFT JOIN categories ON torrents.category=categories.id $where $orderby $limit";
-}
+	
+	$self_snatched_data_cache = 'self_snatched_data_'.$CURUSER['id'];
+	if(!$self_snatched_data = $Cache->get_value($self_snatched_data_cache)){
+		$res = sql_query('SELECT `torrentid`, `to_go` FROM `snatched` WHERE `userid` = '.$CURUSER['id']) or sqlerr(__FILE__,__LINE__);
+		$self_snatched_data = array();
+		while($row = mysql_fetch_row($res)) $self_snatched_data[$row[0]] = $row[1];
+		$Cache->cache_value($self_snatched_data_cache,$self_snatched_data,300);
+	}
+	if ($allsec == 1 || $enablespecial != 'yes'){
+		$query = "SELECT torrents.id, torrents.sp_state, torrents.promotion_time_type, torrents.promotion_until, torrents.banned, torrents.picktype, torrents.pos_group, torrents.pos_until, torrents.category, torrents.source, torrents.medium, torrents.codec, torrents.standard, torrents.processing, torrents.team, torrents.audiocodec, torrents.leechers, torrents.seeders, torrents.name, torrents.small_descr, torrents.times_completed, torrents.size, torrents.added, torrents.comments,torrents.anonymous,torrents.owner,torrents.url,torrents.cache_stamp, torrents.hr, torrents.douban_id, torrents.douban_rating, torrents.imdb_id, torrents.imdb_rating FROM torrents ".($search_area == 3 || $column == "owner" ? "LEFT JOIN users ON torrents.owner = users.id " : "")." $where $orderby $limit";
+	}
+	else{
+		$query = "SELECT torrents.id, torrents.sp_state, torrents.promotion_time_type, torrents.promotion_until, torrents.banned, torrents.picktype, torrents.pos_group, torrents.pos_until, torrents.category, torrents.source, torrents.medium, torrents.codec, torrents.standard, torrents.processing, torrents.team, torrents.audiocodec, torrents.leechers, torrents.seeders, torrents.name, torrents.small_descr, torrents.times_completed, torrents.size, torrents.added, torrents.comments,torrents.anonymous,torrents.owner,torrents.url,torrents.cache_stamp, torrents.hr, torrents.douban_id, torrents.douban_rating, torrents.imdb_id, torrents.imdb_rating FROM torrents ".($search_area == 3 || $column == "owner" ? "LEFT JOIN users ON torrents.owner = users.id " : "")." LEFT JOIN categories ON torrents.category=categories.id $where $orderby $limit";
+	}
 
-	$res = sql_query($query) or die(mysql_error());
+		$res = sql_query($query) or sqlerr(__FILE__,__LINE__);
 }
 else
 	unset($res);
@@ -871,9 +880,9 @@ if ($allsec != 1 || $enablespecial != 'yes'){ //do not print searchbox if showin
 	<table border="1" class="searchbox" cellspacing="0" cellpadding="5" width="100%">
 		<tbody>
 		<tr>
-		<td class="colhead" align="center" colspan="2"><a href="javascript: klappe_news('searchboxmain')"><img class="minus" src="pic/trans.gif" id="picsearchboxmain" alt="Show/Hide" /><?php echo $lang_torrents['text_search_box'] ?></a></td>
+		<td class="colhead" align="center" colspan="2"><a href="javascript: klappe_news('searchboxmain')"><img class="plus" src="pic/trans.gif" id="picsearchboxmain" alt="Show/Hide" /><?php echo $lang_torrents['text_search_box'] ?></a></td>
 		</tr></tbody>
-		<tbody id="ksearchboxmain">
+		<tbody id="ksearchboxmain" style="display: none">
 		<tr>
 			<td class="rowfollow" align="left">
 				<table>
@@ -1075,10 +1084,10 @@ elseif($inclbookmarked == 2)
 if ($count) {
 	print($pagertop);
 	if ($sectiontype == $browsecatmode)
-		torrenttable($res, "torrents");
+		torrenttable($res, "torrents", $self_snatched_data);
 	elseif ($sectiontype == $specialcatmode) 
-		torrenttable($res, "music");
-	else torrenttable($res, "bookmarks");
+		torrenttable($res, "music", $self_snatched_data);
+	else torrenttable($res, "bookmarks", $self_snatched_data);
 	print($pagerbottom);
 }
 else {

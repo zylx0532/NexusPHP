@@ -16,9 +16,7 @@ begin_main_frame();
 begin_frame($lang_faq['text_welcome_to'].$SITENAME." - ".$SLOGAN);
 print($lang_faq['text_welcome_content_one'].$lang_faq['text_welcome_content_two']);
 end_frame();
-if ($CURUSER)
-$lang_id = $CURUSER['lang'];
-else
+
 $lang_id = get_guest_lang_id();
 $is_rulelang = get_single_value("language","rule_lang","WHERE id = ".sqlesc($lang_id));
 if (!$is_rulelang){

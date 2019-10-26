@@ -1,1 +1,11 @@
 .DS_Store
+
+# Visual Studio
+.suo
+.sln
+.phpproj
+memcache.php
+/config/allconfig.php
+/config
+/memcache.php
+/memcache.php

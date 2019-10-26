@@ -78,25 +78,25 @@ if ($_GET["sent"] == 1) {
              </td>
              <td style="border: 0">VIP</td>
 
-             <td style="border: 0" width="20"><input type="checkbox" name="clases[]" value="11">
+             <td style="border: 0" width="20"><input type="checkbox" name="clases[]" value="12">
              </td>
              <td style="border: 0">Uploader</td>
       </tr>
 
     <tr>
-             <td style="border: 0" width="20"><input type="checkbox" name="clases[]" value="12">
+             <td style="border: 0" width="20"><input type="checkbox" name="clases[]" value="13">
              </td>
              <td style="border: 0">Moderator</td>
 
-             <td style="border: 0" width="20"><input type="checkbox" name="clases[]" value="13">
+             <td style="border: 0" width="20"><input type="checkbox" name="clases[]" value="14">
              </td>
              <td style="border: 0">Administrator</td>
 
-             <td style="border: 0" width="20"><input type="checkbox" name="clases[]" value="14">
+             <td style="border: 0" width="20"><input type="checkbox" name="clases[]" value="15">
              </td>
              <td style="border: 0">SysOp</td>
 
-             <td style="border: 0" width="20"><input type="checkbox" name="clases[]" value="15">
+             <td style="border: 0" width="20"><input type="checkbox" name="clases[]" value="16">
              </td>
              <td style="border: 0">Staff Leader</td>
 	

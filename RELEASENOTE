@@ -1,3 +1,16 @@
+Release note for v1.5 beta 5 20120707
+fix tracker "can't unzip" issue when zlib is not enabled
+
+Release note for v1.5 beta 5 20120301
+Fix: several security issues
+Fix: takesignup not checking invitation code
+Fix: function sqlesc() with numeric value
+Fix: sendmail delay issue
+Fix: language file in docleanup()
+Fix: language setting at FAQ and Rules
+Mod: default promotion display type to 'icon'
+thank http://wiki.nexusphp.org for reporting bugs
+
 Release note for v1.5 beta 4 20100919
 Fix: "There is a minimum announce time of 30 seconds", caused by timezone settings. Now you should set correct timezone in php.ini
 Fix: varchar column length exceed 255 characters, which causes errors in MySQL 5.0.3 and later
